@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "none",
+    "outDir": "./wwwroot/js",
+    "rootDir": "./Views",
+    "strict": false
+  },
+  "include": [
+    "Views/**/*.ts"
+  ]
+}

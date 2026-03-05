@@ -1,0 +1,63 @@
+﻿@using Mobile.Models.ViewModels
+@model CameraCaptureModel
+
+<!-- This section is the camera overlay, invisible except if the camera is opened. -->
+<div id="camera-overlay" class="camera-overlay hidden">
+    <div class="camera-container">
+        <!-- Overlay label -->
+        <div id="camera-label" class="camera-label">
+            @if(Model.Prompts != null && Model.Prompts.Any())
+            {
+                @Model.Prompts.First().Label
+            }
+        </div>
+
+        <!-- Actual Video Area -->
+        <video id="video" autoplay playsinline></video>
+        <img id="photo-display" class="photo-display" />
+        <canvas id="canvas" style="display:none;"></canvas>
+
+        <!-- Action Items -->
+        <div class="camera-utilities">
+            <div class="camera-controls">
+                <i id="clear" class="material-icons-round camera-icons">redo</i>
+                <button class="camera-shutter" id="capture"></button>
+                <i id="done" class="material-icons-round camera-icons">check</i>
+            </div>
+
+            <!-- Carousel -->
+            <div class="custom-carousel">
+                @foreach (var label in Model.Prompts)
+                {
+                    <div class="custom-carousel-item" data-label="@label.Label" id="@label.ElementId">
+                        <span class="custom-carousel-item-label">@label.Label</span>
+                        <img id="preview-@label.ElementId" src="~/content/@label.PlaceholderImage" />
+                    </div>
+                }
+
+                <!-- "Add Photo" box, where the user can continue to add misc photos -->
+                <div class="custom-carousel-item" data-label="Add Photo" id="add-photo-item">
+                    <span class="custom-carousel-item-label">Add Photo</span>
+                    <img id="preview-add-photo" src="~/content/add_photo.jpg" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- This section is the placeholder images, visible on the page -->
+<div class="image-grid">
+    @foreach (var image in Model.Prompts)
+    {
+        <div class="image-placeholder" data-elementid="@image.ElementId" data-label="@image.Label">
+            <img id="placeholder-@image.ElementId" src="~/content/@image.PlaceholderImage" alt="@image.Label" />
+            <div class="placeholder-label">@image.Label</div>
+        </div>
+    }
+
+    <!-- "Add Photo" box, where the user can continue to add misc photos -->
+    <div class="image-placeholder" data-elementid="add-photo-item" id="add-photo-item">
+        <i class="material-icons-round add-photo-icon">add_a_photo</i>
+        <div class="placeholder-label">Add Photo</div>
+    </div>
+</div>

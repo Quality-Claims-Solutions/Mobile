@@ -1,0 +1,68 @@
+@model LoginViewModel
+
+<h2>User Login</h2>
+
+<form asp-action="Login" method="post">
+    <div>
+        <input type="radio" asp-for="UseEmail" value="true" checked /> Use Email
+        <input type="radio" asp-for="UseEmail" value="false" /> Use Employee ID
+    </div>
+
+    <div>
+        <label>Email:</label>
+        <input asp-for="Email" />
+    </div>
+
+    <div>
+        <label>Employee ID:</label>
+        <input asp-for="EmployeeId" />
+    </div>
+
+    <div>
+        <label>Password:</label>
+        <input asp-for="Password" type="password" />
+    </div>
+
+    <div>
+        <input asp-for="RememberMe" type="checkbox" /> Remember Me
+    </div>
+
+    <div>
+        <span class="text-danger">@Model.ErrorMessage</span>
+    </div>
+
+    <button type="submit">Log In</button>
+</form>
+
+<h2>Create User</h2>
+<form asp-action="CreateUser" method="post">
+    <div>
+        <input type="radio" asp-for="UseEmail" value="true" checked /> Use Email
+        <input type="radio" asp-for="UseEmail" value="false" /> Use Employee ID
+    </div>
+
+    <div>
+        <label>Email:</label>
+        <input asp-for="Email" />
+    </div>
+
+    <div>
+        <label>Employee ID:</label>
+        <input asp-for="EmployeeId" />
+    </div>
+
+    <div>
+        <label>Password:</label>
+        <input asp-for="Password" type="password" />
+    </div>
+
+    <div>
+        <input asp-for="RememberMe" type="checkbox" /> Remember Me
+    </div>
+
+    <div>
+        <span class="text-danger">@Model.ErrorMessage</span>
+    </div>
+
+    <button type="submit">Log In</button>
+</form>
