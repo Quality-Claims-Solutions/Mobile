@@ -1,10 +1,11 @@
-﻿@{
+﻿@using Mobile.Utilities
+@{
     ViewData["Title"] = "Home Page";
 }
 
 @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
-    <p class="text-success">You are logged in as @User.Identity.Name, with an AspId of @User.FindFirst("AspId")?.Value.</p>
+    <p class="text-success">You are logged in as @User.Identity.Name, with an AspId of @User.GetAspId().</p>
 }
 else
 {

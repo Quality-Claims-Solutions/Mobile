@@ -13,6 +13,26 @@ namespace Mobile.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly Db _dbContext;
 
+        // There are a lot of adjustments that have to be done to the database in Production before this will work.
+        // Extra columns need to be added to a few of the ASPNET Identity tables, and values have to be updated as well.
+        // Use the below as a template.
+
+        // ALTER TABLE AspNetUsers ADD
+        // NormalizedUserName NVARCHAR(256),
+        // NormalizedEmail NVARCHAR(256),
+        // ConcurrencyStamp NVARCHAR(MAX),
+        // LockoutEnd DATETIMEOFFSET
+
+        // ALTER TABLE AspNetRoles
+        // ADD NormalizedName NVARCHAR(256) NULL,
+        // ConcurrencyStamp NVARCHAR(MAX) NULL;
+
+        // UPDATE AspNetUsers
+        // SET NormalizedUserName = UPPER(UserName) where username = 'bob.vaselaar@qcsdirect.com'
+
+        // UPDATE AspNetUsers
+        // SET NormalizedEmail = UPPER(Email) where username = 'bob.vaselaar@qcsdirect.com'
+
         public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, Db dbContext)
         {
             _signInManager = signInManager;
@@ -66,12 +86,19 @@ namespace Mobile.Controllers
 
                 return RedirectToLocal(returnUrl);
             }
+
             if (result.IsLockedOut)
+            {
                 return RedirectToAction("Lockout");
+            }
+
             if (result.RequiresTwoFactor)
+            {
                 return RedirectToAction("TwoFactorAuthenticationSignIn", new { returnUrl, model.RememberMe });
+            }
 
             model.ErrorMessage = "Incorrect username or password";
+
             return View(model);
         }
 
@@ -106,8 +133,7 @@ namespace Mobile.Controllers
 
                 var requiredClaims = new[]
                 {
-                    //new Claim("CarrierLocationId", qcsUser.CarrierLocationID.ToString()),
-                    new Claim("AspId", qcsUser.aspIDV2.ToString() ?? "")
+                    new Claim("CarrierLocation", qcsUser.CarrierLocationID.ToString())
                 };
 
                 foreach (var claim in requiredClaims)
