@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { FormValidator } from "../Shared/FormValidator.js";
 import { validatePhotosOnSubmit } from "../Camera/Camera.js";
 let claimStorage = null;
+const localforage = window.localforage;
 document.addEventListener("DOMContentLoaded", () => {
     const btnProceedToRenterDetails = document.getElementById("btnProceedToRenterDetails");
     const btnSaveAsDraft = document.getElementById("btnSaveAsDraft");

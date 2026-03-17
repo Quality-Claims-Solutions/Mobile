@@ -94,9 +94,10 @@
         <div class="row g-3">
             <div class="col-6">
                 <div class="form-floating select-arrow mb-3">
-                    <select id="ddlYear" asp-for="Year" class="form-select" aria-label="Year">
-                        <option value="" disabled selected></option>
-                        <!-- populate years via JS -->
+                    <select id="ddlYear" 
+                        asp-for="Year" 
+                        asp-items="Model.YearSelectOptions" 
+                        class="form-select" aria-label="Year">
                     </select>
                     <label for="ddlYear">Year</label>
                     <div class="invalid-feedback">Select a year.</div>
@@ -155,11 +156,10 @@
                 <div class="form-floating select-arrow mb-3">
                     <select id="ddlPlateState"
                             asp-for="LicensePlateState"
+                            asp-items="Model.StatesSelectOptions"
                             class="form-select"
                             aria-label="License Plate State / Province"
                             required>
-                        <option value="" disabled selected>Select State / Province</option>
-                        <!-- populate via server/JS -->
                     </select>
                     <label for="ddlPlateState">License Plate State / Province</label>
                     <div class="invalid-feedback">Select a state/province.</div>

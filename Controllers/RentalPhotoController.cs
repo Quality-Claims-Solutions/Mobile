@@ -19,6 +19,9 @@ namespace Mobile.Controllers
         [HttpGet]
         public IActionResult RentalPhotoEntry()
         {
+            var test = new RentalPhotoViewModel() { RentalLocation = "LOCATION", UnitNumber = "UNITNUM" };
+
+
             return View(new RentalPhotoViewModel() { RentalLocation = "LOCATION", UnitNumber = "UNITNUM" });
         }
 
@@ -39,9 +42,6 @@ namespace Mobile.Controllers
 
             try
             {
-
-                //throw new Exception("Test Exception for Logging"); // Temporary line to test error handling and logging. Remove or comment out in production.
-
                 string? programCodeDescription = null;
                 if (submitType == "final")
                 {

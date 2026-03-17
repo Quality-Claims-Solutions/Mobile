@@ -6,10 +6,11 @@ export class FormValidator {
         this.container = container;
     }
     validate({ fields, isDraft }) {
-        this.container.innerHTML = ""; // Clear previous validation messages
-        const header = document.createElement("h4");
-        header.textContent = "Missing Data";
-        this.container.appendChild(header);
+        if (!this.container.innerHTML.includes("Missing Data")) {
+            const header = document.createElement("h4");
+            header.textContent = "Missing Data";
+            this.container.appendChild(header);
+        }
         let valid = true;
         fields.forEach(f => {
             const autoRemoval = () => {

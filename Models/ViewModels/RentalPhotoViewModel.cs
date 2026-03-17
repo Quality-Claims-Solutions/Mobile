@@ -1,4 +1,7 @@
-﻿namespace Mobile.Models.ViewModels
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Mobile.Utilities;
+
+namespace Mobile.Models.ViewModels
 {
     public class RentalPhotoViewModel
     {
@@ -22,10 +25,17 @@
                 new CameraCaptureImagePrompt { ElementId = "front", Label = "Front", PlaceholderImage = "front.jpg" },
                 new CameraCaptureImagePrompt { ElementId = "windshield", Label = "Windshield", PlaceholderImage = "windshield.jpg" }
             };
+
+            StatesSelectOptions = SelectGenerationHelperUtility.GetStates();
+            YearSelectOptions = SelectGenerationHelperUtility.GetYears();
         }
 
         // Properties specific to the view model
         public List<CameraCaptureImagePrompt> ImagePrompts { get; set; }
+
+        public List<SelectListItem> StatesSelectOptions { get; set; }
+
+        public List<SelectListItem> YearSelectOptions { get; set; }
 
         // Properties from HertzRentalPhoto EntityModel
         public decimal Id { get; set; }

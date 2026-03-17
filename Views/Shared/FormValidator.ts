@@ -15,10 +15,11 @@ export class FormValidator {
     }
 
     validate({ fields, isDraft }: { fields: ValidationField[]; isDraft: boolean }): boolean {
-        this.container.innerHTML = ""; // Clear previous validation messages
-        const header = document.createElement("h4");
-        header.textContent = "Missing Data";
-        this.container.appendChild(header);
+        if (!this.container.innerHTML.includes("Missing Data")) {
+            const header = document.createElement("h4");
+            header.textContent = "Missing Data";
+            this.container.appendChild(header);
+        }
         let valid = true;
 
 

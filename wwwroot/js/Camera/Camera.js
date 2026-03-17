@@ -107,6 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (imgTag)
                     imgTag.src = imgData;
                 claimStorage.setItem("photo-" + elementId, imgData);
+                removeChip(elementId);
                 // Show captured image in main camera area
                 if (photoDisplay) {
                     photoDisplay.src = imgData;
@@ -294,6 +295,7 @@ document.addEventListener("DOMContentLoaded", () => {
 export function validatePhotosOnSubmit() {
     return __awaiter(this, void 0, void 0, function* () {
         const missingRequiredPrompts = [];
+        const validationSummary = document.getElementById("divValidationSummary");
         for (const prompt of prompts) {
             if (!prompt.required)
                 continue;
@@ -309,8 +311,46 @@ export function validatePhotosOnSubmit() {
             if (placeholder) {
                 placeholder.classList.add("missing-required");
             }
+            if (!document.getElementById("divValidationSummary").innerHTML.includes("Missing Data")) {
+                const header = document.createElement("h4");
+                header.textContent = "Missing Data";
+                validationSummary.appendChild(header);
+            }
+            addChip(prompt.label, prompt.id);
         });
         return false;
     });
+}
+function addChip(name, id) {
+    const validationSummary = document.getElementById("divValidationSummary");
+    const chip = document.createElement("a");
+    chip.className = "chip z-depth-1";
+    chip.href = "#" + id;
+    chip.textContent = name;
+    chip.id = "chip-" + id;
+    chip.addEventListener("click", e => {
+        e.preventDefault();
+        const el = document.getElementById('placeholder-' + id);
+        if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            el.focus();
+        }
+    });
+    validationSummary.appendChild(chip);
+}
+function removeChip(id) {
+    const validationSummary = document.getElementById("divValidationSummary");
+    const chip = document.getElementById("chip-" + id);
+    if (chip) {
+        chip.remove();
+    }
+    const placeholder = document.getElementById("placeholder-" + id);
+    if (placeholder) {
+        placeholder.classList.remove("missing-required");
+    }
+    // Remove the validation container if there are no chips.
+    if (!validationSummary.querySelector(".chip")) {
+        validationSummary.innerHTML = "";
+    }
 }
 //# sourceMappingURL=Camera.js.map

@@ -1,4 +1,5 @@
 let claimStorage = null;
+let localforage;
 document.addEventListener("DOMContentLoaded", () => {
     const yearSelect = document.getElementById('cboYear');
     const currentYear = new Date().getFullYear();
