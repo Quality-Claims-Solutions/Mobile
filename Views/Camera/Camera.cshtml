@@ -20,16 +20,16 @@
         <!-- Action Items -->
         <div class="camera-utilities">
             <div class="camera-controls">
-                <i id="clear" class="material-icons-round camera-icons">redo</i>
-                <button class="camera-shutter" id="capture"></button>
-                <i id="done" class="material-icons-round camera-icons">check</i>
+                <i id="clear" class="fa fa-redo camera-icons"></i>
+                <button type="button" class="camera-shutter" id="capture"></button>
+                <i id="done" class="fa fa-check camera-icons"></i>
             </div>
 
             <!-- Carousel -->
             <div class="custom-carousel">
                 @foreach (var label in Model.Prompts)
                 {
-                    <div class="custom-carousel-item" data-label="@label.Label" id="@label.ElementId">
+                    <div class="custom-carousel-item" data-label="@label.Label" data-required="@label.IsRequired" id="@label.ElementId">
                         <span class="custom-carousel-item-label">@label.Label</span>
                         <img id="preview-@label.ElementId" src="~/content/@label.PlaceholderImage" />
                     </div>
@@ -57,7 +57,7 @@
 
     <!-- "Add Photo" box, where the user can continue to add misc photos -->
     <div class="image-placeholder" data-elementid="add-photo-item" id="add-photo-item">
-        <i class="material-icons-round add-photo-icon">add_a_photo</i>
+        <i class="fa-regular fa-square-plus" style="font-size: xxx-large;"></i>
         <div class="placeholder-label">Add Photo</div>
     </div>
 </div>

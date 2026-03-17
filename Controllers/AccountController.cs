@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Mobile.Account;
 using Mobile.Models;
+using Mobile.Models.EntityModels;
 using System.Security.Claims;
 
 namespace Mobile.Controllers
@@ -119,11 +120,7 @@ namespace Mobile.Controllers
                     return NotFound("User not found");
                 }
 
-                var claims = await _userManager.GetClaimsAsync(user);
-
-                var existingClaims = await _userManager.GetClaimsAsync(user);
-                var existingTypes = existingClaims.Select(c => c.Type).ToHashSet();
-
+                // Get basic QCS user information
                 var qcsUser = await _dbContext.User.FirstOrDefaultAsync(u => u.EmailAddress == emailAddress);
 
                 if (qcsUser == null)
@@ -131,18 +128,78 @@ namespace Mobile.Controllers
                     return NotFound("QCS User not found");
                 }
 
-                var requiredClaims = new[]
+                if (qcsUser.CarrierLocationID == null)
                 {
-                    new Claim("CarrierLocation", qcsUser.CarrierLocationID.ToString())
+                    return NotFound("User is not associated with a Carrier Location.");
+                }
+
+                // Grab the CarrierCompanyID through a join, since it's not directly on the User table
+                int? carrierCompanyId = await ( from cc in _dbContext.CarrierCompany
+                                               join cl in _dbContext.CarrierLocation on cc.CarrierCompanyID equals cl.CarrierCompanyID
+                                               where cl.CarrierLocationID == qcsUser.CarrierLocationID
+                                               select cc.CarrierCompanyID).FirstOrDefaultAsync();
+
+                if (carrierCompanyId == null)
+                {
+                    return NotFound("User is not associated with a Carrier Company.");
+                }
+
+                // Step 1: Define the desired claims
+                var desiredClaims = new HashSet<(string Type, string Value)>
+                {
+                    ("QCSUserId", qcsUser.UserID.ToString()),
+                    ("CarrierLocationId", qcsUser.CarrierLocationID.ToString()),
+                    ("CarrierCompanyId", carrierCompanyId.ToString())
                 };
 
-                foreach (var claim in requiredClaims)
+                if (!string.IsNullOrEmpty(qcsUser.DefaultProgramCode))
                 {
-                    if (!existingClaims.Any(c => c.Type == claim.Type && c.Value == claim.Value))
+                    desiredClaims.Add(("ProgramCode", qcsUser.DefaultProgramCode));
+                }
+
+                if (!string.IsNullOrEmpty(qcsUser.DefaultProgramCode))
+                {
+                    desiredClaims.Add(("DisplayName", qcsUser.Name));
+                }
+
+                // Step 2: Add claims from matchups
+                var matchups = await _dbContext.User_AssociationMatchup
+                    .Where(uam => uam.UserID == qcsUser.UserID && !uam.IsDeleted)
+                    .ToListAsync();
+
+                foreach (var matchup in matchups)
+                {
+                    if (matchup.CarrierLocationID.HasValue)
                     {
-                        await _userManager.RemoveClaimsAsync(user, existingClaims.Where(c => c.Type == claim.Type));
-                        await _userManager.AddClaimAsync(user, claim);
+                        desiredClaims.Add(("CarrierLocationId", matchup.CarrierLocationID.Value.ToString()));
                     }
+
+                    if (!string.IsNullOrEmpty(matchup.ProgramCode))
+                    {
+                        desiredClaims.Add(("ProgramCode", matchup.ProgramCode));
+                    }
+                }
+
+                // Step 3: Load existing claims
+                IList<Claim>? existingClaims = await _userManager.GetClaimsAsync(user);
+
+                // Step 4: Remove stale claims
+                var toRemove = existingClaims
+                    .Where(c => !desiredClaims.Contains((c.Type, c.Value)))
+                    .ToList();
+
+                foreach (var claim in toRemove)
+                {
+                    await _userManager.RemoveClaimAsync(user, claim);
+                }
+
+                // Step 5: Add missing claims
+                var toAdd = desiredClaims
+                    .Where(d => !existingClaims.Any(c => c.Type == d.Type && c.Value == d.Value));
+
+                foreach (var (type, value) in toAdd)
+                {
+                    await _userManager.AddClaimAsync(user, new Claim(type, value));
                 }
 
                 await _signInManager.RefreshSignInAsync(user);
@@ -153,6 +210,13 @@ namespace Mobile.Controllers
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]

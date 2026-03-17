@@ -1,0 +1,317 @@
+@import url(//fonts.googleapis.com/css?family=Libre+Franklin%3A400%2C700%7CQuestrial&amp;ver=2.2.2);
+
+body {
+    color: rgb(33, 37, 41);
+}
+
+.container.inner-body {
+    width: 100%;
+}
+
+#divCards {
+    width: 84%;
+}
+
+
+header {
+    border-bottom-color: #fc0;
+    border-bottom-style: solid;
+    border-bottom-width: 3px;
+    box-shadow: 0 .25rem .75rem rgb(255 204 0 / 10%);
+}
+
+.header-wrap {
+    padding: 18px 10px 13px;
+}
+
+.header-logo {
+    float: none;
+    background: url(hertz_banner.png) no-repeat !important;
+    min-height: 55px;
+    margin: auto;
+    background-position: left !important;
+    background-size: contain !important;
+}
+
+h5 {
+    color: rgb(33, 37, 41);
+    text-align: left !important;
+    font-size: 20px !important;
+    font-weight: 600;
+}
+
+    h5.white-text {
+        font-size: 20px !important;
+        font-weight: 500;
+    }
+
+.splash .splash-content h5 {
+    text-align: center !important;
+}
+
+
+.header-slogan {
+    display: none;
+}
+
+.btn:hover, .btn-large:hover, .btn-small:hover {
+    background-color: #ffde56cc !important;
+    border-color: #ffde56;
+    box-shadow: 0 0.2rem 0.4rem 0 rgba(0,0,0,0.1);
+    text-shadow: -0.013rem 0 #000, 0.013rem 0 #000;
+    transform: scale(1);
+}
+
+.btn:focus, .btn-large:focus, .btn-small:focus, .btn-floating:focus {
+    background-color: #E5C74E !important;
+}
+
+.btn, .btn-large, .btn-small, .col.s12 .btn-large {
+    /*background-color: #fc0 !important;*/
+    background-color: #fc0 !important;
+    color: black;
+    text-transform: capitalize;
+    font-size: 1.1rem;
+    z-index: 0;
+}
+
+#upload_button_text {
+    text-transform: capitalize;
+    font-size: 1.2rem;
+}
+
+/*#photos_express_title {
+    background-color: white;
+    text-align: left;
+    font-weight: 600;
+    padding: 6px 5px 5px 5px;
+    padding: 6px 0.75rem 5px 0.74rem;
+    font-size: 20px;
+}
+
+    #photos_express_title:before {
+        content: "Photo Estimate Request";
+    }
+
+    #photos_express_title h5 {
+        display: none;
+    }*/
+
+[type="radio"]:checked + span:after, [type="radio"].with-gap:checked + span:after {
+    background-color: #ffbb00;
+}
+
+[type="radio"]:checked + span:after, [type="radio"].with-gap:checked + span:before, [type="radio"].with-gap:checked + span:after {
+    border: 2px solid #ffbb00;
+}
+
+.switch label input[type=checkbox]:checked + .lever {
+    background-color: #ffbb00aa;
+}
+
+    .switch label input[type=checkbox]:checked + .lever:after {
+        background-color: #ffbb00;
+    }
+
+.row .card.col {
+    border-radius: 5px;
+}
+
+.card .card-content {
+    border-radius: 3px;
+}
+
+.photo-container {
+    border-radius: 3px;
+}
+
+    .photo-container .photo-button {
+        border-radius: 3px;
+    }
+
+        .photo-container .photo-button h6 {
+            border-radius: 3px;
+        }
+
+        .photo-container .photo-button img {
+            border-radius: 3px;
+        }
+
+#add.photo-button {
+    border-radius: 3px;
+}
+
+#search_header {
+    border-radius: 3px;
+}
+
+.btn.btn-large { 
+    border-radius: 3px;
+    font-family: "proxima-nova", sans-serif; 
+}
+
+#upload_button {
+    border-radius: 3px;
+}
+
+#f {
+    background-color: #2a2a2a;
+}
+
+
+input.radio {
+    color: #ffde56;
+    background-color: #ffde56;
+    border-color: #ffde56;
+}
+
+#radio {
+    color: #ffde56;
+    border-color: #ffde56;
+    background-color: #ffde56;
+    border-color: #ffde56;
+}
+
+.radio {
+    color: #ffde56;
+    border-color: #ffde56;
+    background-color: #ffde56;
+    border-color: #ffde56;
+}
+/* HEADER LOGO MIMICS CONTAINER BEHAVIOR - LIKE HERTZ WEBSITE */
+@media only screen and (max-width: 601px) {
+    .header-logo {
+        width: 100%;
+    }
+
+    .header-wrap {
+        padding: 15px 10% 10px;
+    }
+}
+
+/* HEADER LOGO MIMICS CONTAINER BEHAVIOR - LIKE HERTZ WEBSITE */
+@media only screen and (min-width: 601px) {
+    .header-logo {
+        width: 85%;
+    }
+}
+
+@media only screen and (min-width: 993px) {
+    .header-logo {
+        width: 70%;
+    }
+}
+
+@media only screen and (max-width: 1000px) {
+
+    .header-wrap {
+        min-height: 30px;
+    }
+
+    .header-logo {
+        min-height: 42px;
+    }
+}
+
+
+@media only screen and (max-width: 450px) {
+
+    .header-logo {
+        min-height: 30px;
+    }
+}
+
+/*DATEPICKER COLORS*/
+.datepicker-date-display {
+    background-color: #ffcc00;
+    color: white;
+}
+
+.datepicker-table td.is-today {
+    color: #ffcc00;
+}
+
+.datepicker-cancel, .datepicker-clear, .datepicker-today, .datepicker-done {
+    color: black;
+}
+
+.datepicker-table td.is-selected {
+    background-color: #ffcc00;
+    color: white;
+}
+
+
+/*TIMEPICKER COLORS*/
+.timepicker-digital-display {
+    background-color: #ffcc00;
+    color: white;
+}
+
+.timepicker-close {
+    color: black;
+}
+
+.timepicker-canvas line {
+    stroke: #ffcc00;
+}
+
+.timepicker-canvas-bg {
+    fill: #ffcc00;
+}
+
+.timepicker-canvas-bearing {
+    fill: #ffcc00;
+}
+
+/*CHECKBOX COLORS*/
+
+[type="checkbox"]:checked + span:not(.lever):before {
+    border-right: 4px solid #ffcc00;
+    border-bottom: 4px solid #ffcc00
+}
+
+/*TEXT INPUT SELECTED LABELS*/
+input:not([type]):focus:not([readonly]) + label,
+input[type=text]:not(.browser-default):focus:not([readonly]) + label,
+input[type=password]:not(.browser-default):focus:not([readonly]) + label,
+input[type=email]:not(.browser-default):focus:not([readonly]) + label,
+input[type=url]:not(.browser-default):focus:not([readonly]) + label,
+input[type=time]:not(.browser-default):focus:not([readonly]) + label,
+input[type=date]:not(.browser-default):focus:not([readonly]) + label,
+input[type=datetime]:not(.browser-default):focus:not([readonly]) + label,
+input[type=datetime-local]:not(.browser-default):focus:not([readonly]) + label,
+input[type=tel]:not(.browser-default):focus:not([readonly]) + label,
+input[type=number]:not(.browser-default):focus:not([readonly]) + label,
+input[type=search]:not(.browser-default):focus:not([readonly]) + label,
+textarea.materialize-textarea:focus:not([readonly]) + label {
+    color: black;
+}
+
+/*TEXT INPUT SELECTED UNDERLINES*/
+input:not([type]):focus:not([readonly]),
+input[type=text]:not(.browser-default):focus:not([readonly]),
+input[type=password]:not(.browser-default):focus:not([readonly]),
+input[type=email]:not(.browser-default):focus:not([readonly]),
+input[type=url]:not(.browser-default):focus:not([readonly]),
+input[type=time]:not(.browser-default):focus:not([readonly]),
+input[type=date]:not(.browser-default):focus:not([readonly]),
+input[type=datetime]:not(.browser-default):focus:not([readonly]),
+input[type=datetime-local]:not(.browser-default):focus:not([readonly]),
+input[type=tel]:not(.browser-default):focus:not([readonly]),
+input[type=number]:not(.browser-default):focus:not([readonly]),
+input[type=search]:not(.browser-default):focus:not([readonly]),
+textarea.materialize-textarea:focus:not([readonly]) {
+    border-bottom: 1px solid #ffcc00;
+    -webkit-box-shadow: 0 1px 0 0 #ffcc00;
+    box-shadow: 0 1px 0 0 #ffcc00;
+}
+
+/*DROP DOWN SELECTED UNDERLINE*/
+.select-wrapper input.select-dropdown:focus {
+    border-bottom: 1px solid #ffcc00;
+}
+
+/*DROP DOWN TEXT ITEMS*/
+.dropdown-content li > a, .dropdown-content li > span {
+    color: black;
+}

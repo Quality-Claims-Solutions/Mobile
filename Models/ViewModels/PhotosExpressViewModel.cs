@@ -10,16 +10,21 @@ namespace Mobile.Models.ViewModels
             ImagePrompts = new List<CameraCaptureImagePrompt>
             {
                 new CameraCaptureImagePrompt { ElementId = "left-front", Label = "Left Front", PlaceholderImage = "left_front.jpg" },
-                new CameraCaptureImagePrompt { ElementId = "vin", Label = "Vin", PlaceholderImage = "left_front.jpg" },
-                new CameraCaptureImagePrompt { ElementId = "odometer", Label = "Odometer", PlaceholderImage = "left_front.jpg" },
-                new CameraCaptureImagePrompt { ElementId = "key-tag", Label = "Key Tag", PlaceholderImage = "left_front.jpg" },
-                new CameraCaptureImagePrompt { ElementId = "left-rear", Label = "left Rear", PlaceholderImage = "left_front.jpg" },
-                new CameraCaptureImagePrompt { ElementId = "license-plate", Label = "License Plate", PlaceholderImage = "left_front.jpg" },
-                new CameraCaptureImagePrompt { ElementId = "right-rear", Label = "Right Rear", PlaceholderImage = "left_front.jpg" },
-                new CameraCaptureImagePrompt { ElementId = "right-front", Label = "Right Front", PlaceholderImage = "left_front.jpg" },
+                new CameraCaptureImagePrompt { ElementId = "vin", Label = "Vin", PlaceholderImage = "vin.jpg" },
+                new CameraCaptureImagePrompt { ElementId = "odometer", Label = "Odometer", PlaceholderImage = "odometer.jpg" },
+                new CameraCaptureImagePrompt { ElementId = "key-tag", Label = "Key Tag", PlaceholderImage = "key_tag.jpg" },
+                new CameraCaptureImagePrompt { ElementId = "left-rear", Label = "left Rear", PlaceholderImage = "left_rear.jpg" },
+                new CameraCaptureImagePrompt { ElementId = "license-plate", Label = "License Plate", PlaceholderImage = "license_plate.jpg" },
+                new CameraCaptureImagePrompt { ElementId = "right-rear", Label = "Right Rear", PlaceholderImage = "right_rear.jpg" },
+                new CameraCaptureImagePrompt { ElementId = "right-front", Label = "Right Front", PlaceholderImage = "right_front.jpg" },
                 new CameraCaptureImagePrompt { ElementId = "damage-detail_1", Label = "Damage Detail 1", PlaceholderImage = "left_front.jpg" },
                 new CameraCaptureImagePrompt { ElementId = "damage-detail_2", Label = "Damage Detail 2", PlaceholderImage = "left_front.jpg" },
                 new CameraCaptureImagePrompt { ElementId = "damage-detail_3", Label = "Damage Detail 3", PlaceholderImage = "left_front.jpg" },
+                new CameraCaptureImagePrompt { ElementId = "accident-report", Label = "Accident Report", PlaceholderImage = "left_front.jpg" },
+                new CameraCaptureImagePrompt { ElementId = "tow-document", Label = "Tow Document", PlaceholderImage = "left_front.jpg" },
+                new CameraCaptureImagePrompt { ElementId = "invoice", Label = "Invoice", PlaceholderImage = "left_front.jpg" },
+                new CameraCaptureImagePrompt { ElementId = "rental-agreement", Label = "Rental Agreement", PlaceholderImage = "left_front.jpg" },
+                new CameraCaptureImagePrompt { ElementId = "vehicle-incident-sheet", Label = "Vehicle Incident Sheet", PlaceholderImage = "left_front.jpg" }
             };
 
             //DamageSourceTypes = System.Enum.GetValues(typeof(DamageSourceTypeEnum))

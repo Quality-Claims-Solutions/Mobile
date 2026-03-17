@@ -9,338 +9,341 @@
     <script src="~/js/PhotosExpress/PhotosExpressEntry.js"></script>
 }
 
-<div>
-    @* @if (User.Identity != null && User.Identity.IsAuthenticated)
-    {
-    <p class="text-success">You are logged in as @User.Identity.Name, with an AspId of @User.FindFirst("AspId")?.Value.</p>
-    }
-    else
-    {
-    <p class="text-danger">You are not logged in.</p>
-    } *@
-    <h2 class="h2 py-2 text-center" ">Photo Estimate Request</h2>
+@* Photo Estimate Request (Bootstrap 5 + floating underline) *@
+<form id="photoEstimateForm" class="needs-validation" novalidate method="post">
+    <div class="container px-3">
+        <h2 class="h2 py-2 text-center">Photo Estimate Request</h2>
 
-    <section id="unit-details" class="mb-3">
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <div class="form-floating mb-3">
+                    <input id="fpDate" type="text" class="form-control" placeholder=" " />
+                    <label for="fpDate">Estimate Date</label>
+                    <div class="invalid-feedback">Please choose a date.</div>
+                </div>
+            </div>
 
-        <div class="row mb-3">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="h4 mb-0">Unit Details</div>
-                    <button id="clearFormBtn" class="h5 mb-0 light-blue-text p-0 bg-transparent border-0">Clear Form</button>
+            <div class="col-12 col-md-6">
+                <div class="form-floating mb-3">
+                    <input id="fpTime" type="text" class="form-control" placeholder=" " />
+                    <label for="fpTime">Estimate Time</label>
+                    <div class="invalid-feedback">Please choose a time.</div>
                 </div>
             </div>
         </div>
 
-        <div class="row mb-2">
-            <div class="col-12">
-                <button type="button"
-                        class="w-100 btn waves-effect waves-light"
-                        onclick="openVinModal();">
-                    Scan Unit Tag
-                </button>
-                @* @await Html.PartialAsync("NewCamera/VinScanner") *@
-            </div>
-        </div>
 
-
-        <div class="row mb-0">
-            <div class="col-12">
-                <div class="input-field ">
-                    <label for="txtReferenceNumber">Own City - Unit Number</label>
-                    <input id="txtReferenceNumber" name="ClaimNumber" type="text" class="validate" required>
-                    <span class="helper-text" data-error="required"></span>
-                </div>
-
-                <div class="input-field ">
-                    <label for="txtLocationNumber">Last Renting Location</label>
-                    <input id="txtLocationNumber" name="HertzLocation" type="text" class="validate" required>
-                    <span class="helper-text" data-error="required"></span>
+        <!-- =============== Unit Details =============== -->
+        <section id="unit-details" class="mb-4">
+            <div class="row mb-3">
+                <div class="col-12 d-flex justify-content-between align-items-center">
+                    <div class="h4 mb-0 section-title">Unit Details</div>
+                    <button id="clearFormBtn" type="button" class="btn btn-link p-0">Clear Form</button>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-6">
-                <label class="d-flex align-items-center">
-                    <input id="ckUsedCarRecon" name="HertzUsedCarRecon" type="checkbox" class="me-2" />
-                    <span>Used Car Recon</span>
-                </label>
-            </div>
-            <div class="col-6">
-                <label class="d-flex align-items-center">
-                    <input id="ckTurnbackRecon" name="HertzTurnBackRecon" type="checkbox" class="me-2" />
-                    <span>Turnback Recon</span>
-                </label>
-            </div>
-        </div>
-
-        <div class="row mb-0">
-            <h6 class="col-12 left-align mb-0 mt-2">Scan the VIN to retrieve vehicle data</h6>
-            <div class="col-6">
-                <button id="btnLiveScan" class="w-100 btn waves-effect waves-light mt-3">Live Scan</button>
-            </div>
-            <div class="col-6">
-                <button id="btnPictureScan" class="w-100 btn waves-effect waves-light mt-3">Picture Scan</button>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-12">
-                <div class="input-field">
-                    <label for="txtVIN">VIN</label>
-                    <input id="txtVIN" name="Vehicle_VIN" type="text" class="validate" required>
+            <div class="row g-2 mb-2">
+                <div class="col-12">
+                    <button type="button" class="btn btn-outline-primary w-100" onclick="openVinModal();">
+                        Scan Unit Tag
+                    </button>
+                    @* @await Html.PartialAsync("NewCamera/VinScanner") *@
                 </div>
             </div>
-            <div class="col-4">
-                <div class="input-field">
-                    <select id="cboYear" name="Vehicle_Year">
+
+            <div class="row g-3">
+                <div class="col-12">
+                    <div class="form-floating mb-3">
+                        <input id="txtVehicleNumber" name="ClaimNumber" type="text" class="form-control" placeholder=" " required />
+                        <label for="txtVehicleNumber">Own City - Unit Number</label>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input id="txtLocationNumber" name="HertzLocation" type="text" class="form-control" placeholder=" " required />
+                        <label for="txtLocationNumber">Last Renting Location</label>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-center">
+                <div class="col-6">
+                    <div class="form-check">
+                        <input id="ckUsedCarRecon" name="HertzUsedCarRecon" class="form-check-input" type="checkbox" />
+                        <label class="form-check-label" for="ckUsedCarRecon">Used Car Recon</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-check">
+                        <input id="ckTurnbackRecon" name="HertzTurnBackRecon" class="form-check-input" type="checkbox" />
+                        <label class="form-check-label" for="ckTurnbackRecon">Turnback Recon</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mt-2">
+                <div class="col-12">
+                    <p class="mb-0 small text-muted">Scan the VIN to retrieve vehicle data</p>
+                </div>
+                <div class="col-6">
+                    <button id="btnLiveScan" type="button" class="btn btn-primary w-100 mt-1">Live Scan</button>
+                </div>
+                <div class="col-6">
+                    <button id="btnPictureScan" type="button" class="btn btn-outline-primary w-100 mt-1">Picture Scan</button>
+                </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+                <div class="col-12">
+                    <div class="form-floating mb-3">
+                        <input id="txtVIN" name="Vehicle_VIN" type="text" class="form-control" placeholder=" " required />
+                        <label for="txtVIN">VIN</label>
+                        <div class="invalid-feedback">VIN is required.</div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-floating mb-3">
+                        <select id="cboYear" name="Vehicle_Year" class="form-select" aria-label="Year">
+                            <option value="" selected></option>
+                            
+                        </select>
+                        <label for="cboYear">Year</label>
+                        <div class="invalid-feedback">Select a year.</div>
+                    </div>
+                </div>
+
+
+                @* <div class="form-floating select-arrow mb-3">
+                    <select id="cboYear" name="Vehicle_Year" class="form-select" aria-label="Year">
                         <option value="" selected></option>
-                        <!-- JS will populate years here -->
                     </select>
                     <label for="cboYear">Year</label>
+                </div> *@
 
-                </div>
-            </div>
-            <div class="col-8 ">
-                <div class="input-field">
-                    <label for="txtMake">Make</label>
-                    <input id="txtMake" name="Vehicle_Make" type="text" class="validate">
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="input-field">
-                    <label for="txtModel">Model</label>
-                    <input id="txtModel" name="Vehicle_Model" type="text" class="validate">
-                </div>
-            </div>
-            <div class="col-6">
-                <div class="input-field">
-                    <label class="d-flex align-items-center">
-                        <input id="ckCargoVan" name="CargoVan" type="checkbox" value="isCargoVan" class="me-2" />
-                        <span>Cargo Van</span>
-                    </label>
-                </div>
-            </div>
-            <div class="col-6">
-                <div class="input-field">
-                    <label for="txtMileage">Milage</label>
-                    <input id="txtMileage" name="Vehicle_Mileage" type="text" class="validate">
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <section id="additional-details" class="mb-3">
-        <div class="row mb-3">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="h4 mb-0">Additional Details</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-9">
-                <div class="input-field">
-                @* @Html.DropDownListFor(
-                         m => m.DamageSourceTypeId,
-                         Model.DamageSourceTypes,
-                         new { id = "cboCause" }
-                         ) *@
-                    <label for="cboCause">Source of Damage</label>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="input-field">
-                    <label class="d-flex align-items-center">
-                        <input id="ckIsLossDamageWaiver" type="checkbox" class="me-2" />
-                        <span>LDW</span>
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mb-2">
-            <div class="col-12">
-                <button id="btnScanRentalRecord" class="w-100 btn waves-effect waves-light ">Scan Rental Record Number</button>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-12">
-                <div class="input-field ">
-                    <label for="txtRentalRecord">Rental Record Number</label>
-                    <input id="txtRentalRecord" type="text" class="validate" required>
-                    <span class="helper-text" data-error="required"></span>
+                <div class="col-8">
+                    <div class="form-floating mb-3">
+                        <input id="txtMake" name="Vehicle_Make" type="text" class="form-control" placeholder=" " />
+                        <label for="txtMake">Make</label>
+                    </div>
                 </div>
 
-                <div class="input-field ">
-                    <label for="txtDamageVehicleIncidentReportId">Damage VIR Id</label>
-                    <input id="txtDamageVehicleIncidentReportId" type="text" class="validate" required>
-                    <span class="helper-text" data-error="required"></span>
+                <div class="col-12">
+                    <div class="form-floating mb-3">
+                        <input id="txtModel" name="Vehicle_Model" type="text" class="form-control" placeholder=" " />
+                        <label for="txtModel">Model</label>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="form-check">
+                        <input id="ckCargoVan" name="CargoVan" value="isCargoVan" class="form-check-input" type="checkbox" />
+                        <label class="form-check-label" for="ckCargoVan">Cargo Van</label>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="form-floating mb-3">
+                        <input id="txtMileage" name="Vehicle_Mileage" type="text" class="form-control" inputmode="numeric" pattern="[0-9]*" placeholder=" " />
+                        <label for="txtMileage">Mileage</label>
+                        <div class="invalid-feedback">Enter mileage (numbers only).</div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section id="select_action_type" class="mb-3">
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="h4 mb-0">Select Action Type</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row left-align mb-5">
-            <div class="col-6 mb-3">
-                <label>
-                    <input id="repair" name="actionGroup" type="radio" value="Repair" checked />
-                    <span>Repair</span>
-                </label>
-            </div>
-            <div class="col-6">
-                <label>
-                    <input id="damageLiquidate" name="actionGroup" type="radio" value="DamageLiquidate" />
-                    <span>Damage/Liquidate</span>
-                </label>
-            </div>
-            <div class="col-6">
-                <label>
-                    <input id="salvage" name="actionGroup" type="radio" value="Salvage" />
-                    <span>Salvage</span>
-                </label>
-            </div>
-            <div class="col-6">
-                <label>
-                    <input id="notToBeRepaired" name="actionGroup" type="radio" value="Deferred Damage" />
-                    <span>Deferred Damage</span>
-                </label>
-            </div>
-        </div>
-    </section>
-
-    <section id="find_repair_facility">
-        <div class="row mb-3">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="h4 mb-0">Find Repair Facility</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mb-0">
-            <div class="col-lg-3 col-5">
-                <div class="input-field">
-                    <label for="txtSearchZip">ZIP / Postal Code</label>
-                    <input id="txtSearchZip" type="text" class="validate" required>
-                    <span class="helper-text" data-error="required"></span>
+        <!-- =============== Additional Details =============== -->
+        <section id="additional-details" class="mb-4">
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="h4 mb-0 section-title">Additional Details</div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-5">
-                <div class="input-field">
-                    <select id="cboSearchRadius">
-                        <option value="10">10 miles</option>
-                        <option value="25" selected>25 miles</option>
-                        <option value="50">50 miles</option>
-                        <option value="100">100 miles</option>
-                        <option value="500">500 miles</option>
-                    </select>
-                    <label for="cboSearchRadius">Search Shops Within</label>
+            <div class="row g-3">
+                <div class="col-9">
+                    <div class="form-floating mb-3">
+                        @* Replace with your Razor DropDownList when ready *@
+                        <select id="cboCause" class="form-select" aria-label="Source of Damage">
+                            <option value="" selected></option>
+                            <!-- populate via server or JS -->
+                        </select>
+                        <label for="cboCause">Source of Damage</label>
+                        <div class="invalid-feedback">Please select a value.</div>
+                    </div>
+                </div>
+
+                <div class="col-3 d-flex align-items-center">
+                    <div class="form-check">
+                        <input id="ckIsLossDamageWaiver" class="form-check-input" type="checkbox" />
+                        <label class="form-check-label" for="ckIsLossDamageWaiver">LDW</label>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-2 align-content-start">
-                <div class="input-field" style="text-align:center;">
-                    <button id="btnSearchShop"
-                            class="btn waves-effect waves-light"
-                            style="width:100%; max-width:90px; padding:0;">
+            <div class="row g-2 mb-2">
+                <div class="col-12">
+                    <button id="btnScanRentalRecord" type="button" class="btn btn-outline-primary w-100">
+                        Scan Rental Record Number
+                    </button>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-12">
+                    <div class="form-floating mb-3">
+                        <input id="txtRentalRecord" name="RentalRecord" type="text" class="form-control" placeholder=" " required />
+                        <label for="txtRentalRecord">Rental Record Number</label>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input id="txtDamageVehicleIncidentReportId" name="DamageVIRId" type="text" class="form-control" placeholder=" " required />
+                        <label for="txtDamageVehicleIncidentReportId">Damage VIR Id</label>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =============== Select Action Type =============== -->
+        <section id="select_action_type" class="mb-4">
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="h4 mb-0 section-title">Select Action Type</div>
+                </div>
+            </div>
+
+            <div class="row g-2 mb-3">
+                <div class="col-6">
+                    <div class="form-check">
+                        <input id="repair" name="actionGroup" class="form-check-input" type="radio" value="Repair" checked />
+                        <label class="form-check-label" for="repair">Repair</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-check">
+                        <input id="damageLiquidate" name="actionGroup" class="form-check-input" type="radio" value="DamageLiquidate" />
+                        <label class="form-check-label" for="damageLiquidate">Damage/Liquidate</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-check">
+                        <input id="salvage" name="actionGroup" class="form-check-input" type="radio" value="Salvage" />
+                        <label class="form-check-label" for="salvage">Salvage</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-check">
+                        <input id="notToBeRepaired" name="actionGroup" class="form-check-input" type="radio" value="Deferred Damage" />
+                        <label class="form-check-label" for="notToBeRepaired">Deferred Damage</label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =============== Find Repair Facility =============== -->
+        <section id="find_repair_facility" class="mb-4">
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="h4 mb-0 section-title">Find Repair Facility</div>
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-end">
+                <div class="col-5 col-lg-3">
+                    <div class="form-floating">
+                        <input id="txtSearchZip" type="text" class="form-control" placeholder=" " required />
+                        <label for="txtSearchZip">ZIP / Postal Code</label>
+                        <div class="invalid-feedback">ZIP/Postal is required.</div>
+                    </div>
+                </div>
+
+                <div class="col-5 col-lg-3">
+                    <div class="form-floating">
+                        <select id="cboSearchRadius" class="form-select" aria-label="Search Shops Within">
+                            <option value="" disabled></option>
+                            <option value="10">10 miles</option>
+                            <option value="25" selected>25 miles</option>
+                            <option value="50">50 miles</option>
+                            <option value="100">100 miles</option>
+                            <option value="500">500 miles</option>
+                        </select>
+                        <label for="cboSearchRadius">Search Shops Within</label>
+                    </div>
+                </div>
+
+                <div class="col-2 col-lg-3">
+                    <button id="btnSearchShop" type="button" class="btn btn-primary w-100" style="max-width: 90px;">
                         Go
                     </button>
                 </div>
             </div>
-        </div>
 
-
-
-        <div class="row">
-            <div class="col-12 mb-4">
-                <div class="h5 fw-bolder mb-0">Shop Search Results</div>
-                <ul class="collection" id="listShopResults"
-                    style="max-height: 380px; overflow: auto; border: 3px solid #e0e0e0;">
-                </ul>
-                <div style="h5 fw-bolder"><b>Selected Shop: </b><span id="txtSelectedShop"></span></div>
-
-            </div>
-        </div>
-
-    </section>
-
-    <section id="select_vehicle_type">
-        <div class="row mb-3">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="h4 mb-0">Select Vehicle Type</div>
+            <div class="row g-3 mt-2">
+                <div class="col-12 mb-3">
+                    <div class="h5 fw-semibold mb-2">Shop Search Results</div>
+                    <ul id="listShopResults" class="list-group overflow-auto border rounded" style="max-height: 380px;">
+                        @* results appended here *@
+                    </ul>
+                    <div class="mt-2">
+                        <span class="fw-semibold">Selected Shop: </span>
+                        <span id="txtSelectedShop"></span>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div class="row left-align">
-            <div class="col-6 ">
-                <label>
-                    <input id="typeA" name="typeGroup" type="radio" value="Program" />
-                    <span>Program</span>
-                </label>
-            </div>
-            <div class="col-6">
-                <label>
-                    <input id="typeO" name="typeGroup" type="radio" value="Risk" checked />
-                    <span>Risk</span>
-                </label>
-            </div>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="input-field ">
-                    <label for="txtReturnEmail">Return Email</label>
-                    <input id="txtReturnEmail" type="email" class="validate" required>
-                    <span class="helper-text" data-error="required"></span>
-                </div>
-
-                <div class="input-field ">
-                    <label for="txtLocationName">Location Name</label>
-                    <input id="txtLocationName" spellcheck="false" pattern=".{4,10}" type="text" class="validate" required />
-                    <span class="helper-text" data-error="required"></span>
-                </div>
-
-                <div class="input-field">
-                    <textarea id="txtRemarks" maxlength="300" class="materialize-textarea" required="required"></textarea>
-                    <label for="txtRemarks">Damage Description</label>
-                    <span class="helper-text" data-error="required">required</span>
+        <!-- =============== Select Vehicle Type =============== -->
+        <section id="select_vehicle_type" class="mb-4">
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="h4 mb-0 section-title">Select Vehicle Type</div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <section id="vehicle_photos">
-        <div class="row mb-3">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="h4 mb-0">Vehicle Photos</div>
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="form-check">
+                        <input id="typeA" name="typeGroup" class="form-check-input" type="radio" value="Program" />
+                        <label class="form-check-label" for="typeA">Program</label>
+                    </div>
                 </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <h6 class="col-12 left-align mb-0 mt-2">
-                        Please take all photos listed below to help accurately assess the damage to your vehicle.
-                        Tap the 'Upload' button when finished.
-                    </h6>
+                <div class="col-6">
+                    <div class="form-check">
+                        <input id="typeO" name="typeGroup" class="form-check-input" type="radio" value="Risk" checked />
+                        <label class="form-check-label" for="typeO">Risk</label>
+                    </div>
                 </div>
             </div>
-        </div>
 
-    @* Initialize Camera and Placeholder Images with the base set of images from the View Model *@
-    @await Html.PartialAsync("~/Views/Camera/Camera.cshtml", new CameraCaptureModel { Prompts = Model.ImagePrompts })
+            <div class="row g-3 mt-1">
+                <div class="col-12">
+                    <div class="form-floating mb-3">
+                        <input id="txtReturnEmail" type="email" class="form-control" placeholder=" " required />
+                        <label for="txtReturnEmail">Return Email</label>
+                        <div class="invalid-feedback">Please provide a valid email.</div>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input id="txtLocationName" spellcheck="false" pattern=".{4,10}" type="text" class="form-control" placeholder=" " required />
+                        <label for="txtLocationName">Location Name</label>
+                        <div class="invalid-feedback">4–10 characters required.</div>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <textarea id="txtRemarks" maxlength="300" class="form-control" placeholder=" " required></textarea>
+                        <label for="txtRemarks">Damage Description</label>
+                        <div class="invalid-feedback">This field is required.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        @* Initialize Camera and Placeholder Images with the base set of images from the View Model *@
+        @await Html.PartialAsync("~/Views/Camera/Camera.cshtml", new CameraCaptureModel { Prompts = Model.ImagePrompts })
         <div class="row mb-3">
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center">
@@ -350,10 +353,18 @@
                 </div>
             </div>
         </div>
-    </section> 
+        </section>
 
-    <button class="btn waves-effect waves-light" type="submit">Submit</button>
-</div>
+        <!-- Submit -->
+        <div class="row">
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary w-100">Submit Request</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+    
 
 <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -369,8 +380,15 @@
             yearSelect.appendChild(option);
         }
 
-        // Initialize Materialize select
-        M.FormSelect.init(yearSelect);
+        // Time picker
+        // flatpickr('#fpTime', {
+        //     enableTime: true,
+        //     noCalendar: true,
+        //     time_24hr: false,      // switch to true if you prefer 24h
+        //     dateFormat: 'h:i K',   // e.g., 9:30 AM
+        //     minuteIncrement: 5,
+        //     defaultDate: '09:00'
+        // });
     });
 </script>
 

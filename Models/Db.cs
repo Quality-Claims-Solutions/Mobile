@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Mobile.Account;
-using Mobile.Data;
 using Mobile.Models.EntityModels;
 using SampleMVC.Models.EntityModels;
 
@@ -15,8 +14,17 @@ namespace Mobile.Models
         }
 
         // Entity Models
+        public DbSet<CarrierCompany> CarrierCompany { get; set; }
+        public DbSet<CarrierLocation> CarrierLocation { get; set; }
+        public DbSet<CarrierProgramCode> CarrierProgramCode { get; set; }
+
+        public DbSet<Log> Log { get; set; }
+
+        public DbSet<HertzRentalPhoto> HertzRentalPhoto { get; set; }
+
         public DbSet<PhotosExpress> PhotosExpress { get; set; }
         public DbSet<User> User { get; set; }
+        public DbSet<User_AssociationMatchup> User_AssociationMatchup { get; set; }
 
     }
 }

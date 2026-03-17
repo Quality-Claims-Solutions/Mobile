@@ -1,0 +1,221 @@
+﻿@using Mobile.Models.ViewModels
+@model RentalPhotoViewModel
+@{
+    ViewData["Title"] = "Pre-Rental Inspection Photos";
+}
+
+@section Scripts {
+    <script type="module" src="~/js/RentalPhoto/RentalPhotoEntry.js"></script>
+}
+
+
+<form id="frmRentalPhoto" asp-controller="RentalPhoto" asp-action="RentalPhotoEntry" novalidate method="post">
+    <div class="container px-3">
+        <div class="row" style="margin-bottom: 10px;">
+            <h3 class="col-12">Pre-Rental Inspection Photos</h3>
+        </div>
+
+        <!-- Vehicle Data -->
+        <div class="row">
+            <h4 class="col-12">Vehicle Data</h4>
+        </div>
+
+        <!-- Scan Unit Tag -->
+        <div class="row g-2 mb-3">
+            <div class="col-12">
+                <button id="btnScanUnitTag" type="button" class="btn btn-primary w-100">
+                    Scan Unit Tag
+                </button>
+            </div>
+        </div>
+
+        <!-- Own City / Rent Location -->
+        <div class="row g-3" style="margin-bottom: 10px;">
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input id="txtOwnCityUnit"
+                           asp-for="UnitNumber"
+                           type="text"
+                           class="form-control"
+                           placeholder=" "/>
+                    <label for="txtOwnCityUnit">Own City - Unit Number (verified against Hertz data)</label>
+                    <div class="invalid-feedback">Unit Number is required.</div>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input id="txtRentLocation"
+                           asp-for="RentalLocation"
+                           type="text"
+                           class="form-control"
+                           placeholder=" "
+                           inputmode="numeric"
+                           pattern="^[0-9]{6}$" />
+                    <label for="txtRentLocation">Rent Location #</label>
+                    <div class="invalid-feedback">Enter the rent location number.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIN Scan Actions -->
+        <div class="row">
+            <h6 class="col-12" style="font-size: 16px;">Scan the VIN to retrieve vehicle data</h6>
+
+            <div class="col-6 mt-1">
+                <button id="btnLiveScan" type="button" class="btn btn-primary w-100">
+                    Live Scan
+                </button>
+            </div>
+
+            <div class="col-6 mt-1">
+                <button id="btnPictureScan" type="button" class="btn btn-outline-primary w-100">
+                    Picture Scan
+                </button>
+            </div>
+        </div>
+
+        <!-- VIN -->
+        <div class="row g-3 mt-2">
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input id="txtVin"
+                           asp-for="VIN"
+                           type="text"
+                           class="form-control"
+                           placeholder=" "
+                           required 
+                           data-label="VIN"/>
+                    <label for="txtVin">VIN</label>
+                    <div class="invalid-feedback">VIN is required.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Year / Make -->
+        <div class="row g-3">
+            <div class="col-6">
+                <div class="form-floating select-arrow mb-3">
+                    <select id="ddlYear" asp-for="Year" class="form-select" aria-label="Year">
+                        <option value="" disabled selected></option>
+                        <!-- populate years via JS -->
+                    </select>
+                    <label for="ddlYear">Year</label>
+                    <div class="invalid-feedback">Select a year.</div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="form-floating mb-3">
+                    <input id="txtMake"
+                           asp-for="Make"
+                           type="text"
+                           class="form-control"
+                           placeholder=" "
+                           required />
+                    <label for="txtMake">Make</label>
+                    <div class="invalid-feedback">Make is required.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model -->
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input id="txtModel"
+                           asp-for="Model"
+                           type="text"
+                           class="form-control"
+                           placeholder=" "
+                           required />
+                    <label for="txtModel">Model</label>
+                    <div class="invalid-feedback">Model is required.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- License Plate -->
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input id="txtLicensePlate"
+                           asp-for="LicensePlate"
+                           type="text"
+                           class="form-control"
+                           placeholder=" "
+                           required />
+                    <label for="txtLicensePlate">License Plate Number</label>
+                    <div class="invalid-feedback">License plate number is required.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- License Plate State / Province -->
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="form-floating select-arrow mb-3">
+                    <select id="ddlPlateState"
+                            asp-for="LicensePlateState"
+                            class="form-select"
+                            aria-label="License Plate State / Province"
+                            required>
+                        <option value="" disabled selected>Select State / Province</option>
+                        <!-- populate via server/JS -->
+                    </select>
+                    <label for="ddlPlateState">License Plate State / Province</label>
+                    <div class="invalid-feedback">Select a state/province.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vehicle Photos -->
+        <div class="row" style="margin-top: 2rem;">
+            <h4 class="col-12">Vehicle Photos</h4>
+            <h6 class="col-12" style="font-size: 14px;">Please take all photos listed below to help accurately record the condition of the rental.</h6>
+        </div>
+
+        <!-- Camera Partial -->
+        @* Initialize Camera and Placeholder Images with the base set of images from the View Model *@
+        @await Html.PartialAsync("~/Views/Camera/Camera.cshtml", new CameraCaptureModel { Prompts = Model.ImagePrompts })
+
+        <!-- Vehicle Comments -->
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input id="txtVehicleComments"
+                           asp-for="VehicleComments"
+                           type="text"
+                           class="form-control"
+                           placeholder=" " />
+                    <label for="txtVehicleComments">Vehicle Comments</label>
+                </div>
+            </div>
+        </div>
+
+        <div id="divValidationSummary" class="validation-summary">
+            @* Dynamically populated *@
+        </div>
+
+        <!-- Instructions -->
+        <div class="row">
+            <div class="col-12">
+                <p class="mb-0">
+                    When finished, please tap the Submit button to submit your photos, or use the
+                    <strong>Save As Draft</strong> button to submit a draft that remains available for recall for up to 72 hours.
+                </p>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="row" style="padding-top: 10px;">
+            <div class="col-12">
+                <button id="btnSaveAsDraft" type="submit" name="submitType" value="draft" class="btn btn-primary w-100" style="height: 54px; font-size: 1.4rem;">Save Draft</button>
+            </div>
+        </div>
+
+        <div class="row" style="padding-top: 10px;">
+            <div class="col-12">
+                <button id="btnProceedToRenterDetails" type="submit" name="submitType" value="final" class="btn btn-primary w-100" style="height: 54px; font-size: 1.4rem;">Proceed to Rental Details</button>
+            </div>
+        </div>
+    </div>
+</form>

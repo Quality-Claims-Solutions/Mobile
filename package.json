@@ -11,11 +11,7 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
-    "@types/localforage": "^0.0.33",
     "eslint": "^10.0.2",
     "typescript": "^5.9.3"
-  },
-  "dependencies": {
-    "localforage": "^1.10.0"
   }
 }

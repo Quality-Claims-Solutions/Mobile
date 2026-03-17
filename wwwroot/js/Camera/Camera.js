@@ -8,6 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+let claimStorage = null;
+let prompts = [];
 document.addEventListener("DOMContentLoaded", () => {
     const overlay = document.getElementById("camera-overlay");
     const video = document.getElementById("video");
@@ -18,15 +20,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const labelOverlay = document.getElementById("camera-label");
     const photoDisplay = document.getElementById("photo-display");
     const carouselItems = Array.from(document.querySelectorAll(".custom-carousel-item"));
-    let claimStorage = null;
     let stream = null;
-    let prompts = [];
     // Build prompts array from carousel items for dynamic "Add Photo"
     document.querySelectorAll(".custom-carousel-item").forEach(el => {
+        var _a;
+        const item = el;
         prompts.push({
             id: el.id,
-            label: 'test',
-            required: true,
+            label: (_a = item.dataset.label) !== null && _a !== void 0 ? _a : 'no-label',
+            required: item.dataset.required === 'True',
             placeholderImage: el.id
         });
     });
@@ -37,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     // Listen for the unique identifier event from the main page.
     // When we have a unique identifier, we can begin saving photos in the localForage instance.
-    document.addEventListener("uniqueIdentifierSet", (e) => __awaiter(this, void 0, void 0, function* () {
+    document.addEventListener("uniqueIdentifierSet", (e) => __awaiter(void 0, void 0, void 0, function* () {
         const localForageUniqueIdentifier = e.detail.localForageUniqueIdentifier;
         if (!localForageUniqueIdentifier)
             return;
@@ -57,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
         prompts.forEach(prompt => {
             let placeholderImage = document.getElementById('placeholder-' + prompt.id);
             if (placeholderImage && prompt.placeholderImage) {
-                placeholderImage.src = '/content/' + prompt.placeholderImage.replace('-', '_') + '.jpg';
+                placeholderImage.src = '/content/' + prompt.placeholderImage.replace(/-/g, "_") + '.jpg';
             }
         });
         // Initialize localForage instance for this claim
@@ -79,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }));
     // Capture photo
     if (captureButton && canvas && video) {
-        captureButton.addEventListener("click", () => __awaiter(this, void 0, void 0, function* () {
+        captureButton.addEventListener("click", () => __awaiter(void 0, void 0, void 0, function* () {
             const context = canvas.getContext("2d");
             if (!context)
                 return;
@@ -289,3 +291,26 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+export function validatePhotosOnSubmit() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const missingRequiredPrompts = [];
+        for (const prompt of prompts) {
+            if (!prompt.required)
+                continue;
+            const value = yield claimStorage.getItem("photo-" + prompt.id);
+            if (!value) {
+                missingRequiredPrompts.push(prompt);
+            }
+        }
+        if (missingRequiredPrompts.length === 0)
+            return true;
+        missingRequiredPrompts.forEach(prompt => {
+            const placeholder = document.getElementById("placeholder-" + prompt.id);
+            if (placeholder) {
+                placeholder.classList.add("missing-required");
+            }
+        });
+        return false;
+    });
+}
+//# sourceMappingURL=Camera.js.map

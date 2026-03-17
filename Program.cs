@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Mobile.Account;
 using Mobile.Models;
+using Mobile.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,21 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// Colton Added for Branding/CSS themes based on URI.
+app.Use(async (context, next) =>
+{
+    var requestUri = new Uri($"{context.Request.Scheme}://{context.Request.Host}");
+
+    var brandKey = URIUtility.GetURIBranding(requestUri);
+    var brandInfo = BrandFactory.Create(brandKey);
+
+    context.Items["Brand"] = brandInfo;
+    context.Items["LogoPath"] = $"/branding/{brandKey}/banner.png";
+    context.Items["CssPath"] = $"/branding/{brandKey}/style.css";
+
+    await next();
+});
 
 app.UseAuthorization();
 

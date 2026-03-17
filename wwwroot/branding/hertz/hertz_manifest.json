@@ -1,0 +1,8 @@
+﻿{
+  "name": "Hertz QCS",
+  "short_name": "Hertz",
+  "display": "standalone",
+  "scope": "/",
+  "background_color": "#FFF",
+  "theme_color": "#FFF"
+}

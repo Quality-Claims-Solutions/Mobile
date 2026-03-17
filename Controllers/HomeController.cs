@@ -15,7 +15,12 @@ namespace Mobile.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            if (User == null || !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            return View(new IndexViewModel());
         }
 
         public IActionResult Privacy()

@@ -1,68 +1,87 @@
 @model LoginViewModel
 
-<h2>User Login</h2>
+@{
+    ViewData["Title"] = "Login";
+}
 
-<form asp-action="Login" method="post">
-    <div>
-        <input type="radio" asp-for="UseEmail" value="true" checked /> Use Email
-        <input type="radio" asp-for="UseEmail" value="false" /> Use Employee ID
+@section Scripts {
+    <script src="~/js/Account/Login.js"></script>
+}
+
+<form asp-action="Login" id="loginForm" method="post" class="p-4 shadow rounded bg-white" style="max-width: 400px; margin: auto;">
+    <div class="mb-3">
+        <span class="form-label d-block fw-semibold">Login with</span>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input"
+                   type="radio"
+                   asp-for="UseEmail"
+                   value="true"
+                   id="useEmailRadio"
+                   checked
+                   aria-controls="emailGroup">
+            <label class="form-check-label" for="useEmailRadio">Email</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input"
+                   type="radio"
+                   asp-for="UseEmail"
+                   value="false"
+                   id="useEmployeeRadio"
+                   aria-controls="employeeGroup">
+            <label class="form-check-label" for="useEmployeeRadio">Employee ID</label>
+        </div>
     </div>
 
-    <div>
-        <label>Email:</label>
-        <input asp-for="Email" />
+    <!-- Email (floating, underline-only) -->
+    <div class="form-floating mb-3" id="emailGroup">
+        <input asp-for="Email"
+               class="form-control"
+               type="email"
+               placeholder=" "
+               autocomplete="email" />
+        <label asp-for="Email"></label>
+        <div class="invalid-feedback">Please enter a valid email address.</div>
+        <span class="text-danger" asp-validation-for="Email"></span>
     </div>
 
-    <div>
-        <label>Employee ID:</label>
-        <input asp-for="EmployeeId" />
+    <!-- Employee ID (floating, underline-only; initially hidden) -->
+    <div class="form-floating mb-3 d-none" id="employeeGroup">
+        <input asp-for="EmployeeId"
+               class="form-control"
+               inputmode="numeric"
+               pattern="[0-9]*"
+               placeholder=" "
+               autocomplete="username" />
+        <label asp-for="EmployeeId">Employee Id</label>
+        <div class="invalid-feedback">Please enter your employee ID.</div>
+        <span class="text-danger" asp-validation-for="EmployeeId"></span>
     </div>
 
-    <div>
-        <label>Password:</label>
-        <input asp-for="Password" type="password" />
+    <!-- Password -->
+    <div class="form-floating mb-3">
+        <input asp-for="Password"
+               type="password"
+               class="form-control"
+               placeholder=" "
+               autocomplete="current-password"
+               required />
+        <label asp-for="Password"></label>
+        <div class="invalid-feedback">Password is required.</div>
+        <span class="text-danger" asp-validation-for="Password"></span>
     </div>
 
-    <div>
-        <input asp-for="RememberMe" type="checkbox" /> Remember Me
+    <!-- Remember Me (kept standard for clarity) -->
+    <div class="form-check mb-3">
+        <input asp-for="RememberMe" class="form-check-input" type="checkbox" id="rememberMe">
+        <label class="form-check-label" for="rememberMe">Remember me</label>
     </div>
 
-    <div>
-        <span class="text-danger">@Model.ErrorMessage</span>
-    </div>
+    <!-- Validation summary + error banner (unchanged) -->
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2" role="alert"></div>
+    @if (!string.IsNullOrWhiteSpace(Model?.ErrorMessage))
+    {
+        <div class="alert alert-danger py-2" role="alert">@Model.ErrorMessage</div>
+    }
 
-    <button type="submit">Log In</button>
-</form>
-
-<h2>Create User</h2>
-<form asp-action="CreateUser" method="post">
-    <div>
-        <input type="radio" asp-for="UseEmail" value="true" checked /> Use Email
-        <input type="radio" asp-for="UseEmail" value="false" /> Use Employee ID
-    </div>
-
-    <div>
-        <label>Email:</label>
-        <input asp-for="Email" />
-    </div>
-
-    <div>
-        <label>Employee ID:</label>
-        <input asp-for="EmployeeId" />
-    </div>
-
-    <div>
-        <label>Password:</label>
-        <input asp-for="Password" type="password" />
-    </div>
-
-    <div>
-        <input asp-for="RememberMe" type="checkbox" /> Remember Me
-    </div>
-
-    <div>
-        <span class="text-danger">@Model.ErrorMessage</span>
-    </div>
-
-    <button type="submit">Log In</button>
+    <button type="submit" class="btn btn-primary w-100">Log In</button>
 </form>

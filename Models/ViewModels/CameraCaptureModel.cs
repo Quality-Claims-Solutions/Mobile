@@ -15,5 +15,7 @@
 
         // This is the image file that is used as a placeholder (ie, front_left.jpg).
         public string PlaceholderImage { get; set; }
+
+        public bool IsRequired { get; set; } = true;
     }
 }

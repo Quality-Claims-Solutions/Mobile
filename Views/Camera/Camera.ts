@@ -1,6 +1,17 @@
 ﻿// wwwroot/js/Camera/camera.ts
 
-declare const localforage: LocalForage;
+declare const localforage: any;
+
+let claimStorage: any | null = null;
+
+interface PhotoPrompt {
+    id: string;
+    label: string;
+    required: boolean;
+    placeholderImage?: string;
+}
+
+let prompts: PhotoPrompt[] = [];
 
 document.addEventListener("DOMContentLoaded", () => {
     const overlay = document.getElementById("camera-overlay") as HTMLElement | null;
@@ -13,26 +24,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const photoDisplay = document.getElementById("photo-display") as HTMLImageElement | null;
     const carouselItems = Array.from(document.querySelectorAll<HTMLElement>(".custom-carousel-item"));
 
-    let claimStorage: LocalForage | null = null;
 
     let stream: MediaStream | null = null;
 
-    // I don't know that this is fully necessary.  Investigate.
-    interface PhotoPrompt {
-        id: string;
-        label: string;
-        required: boolean;
-        placeholderImage?: string;
-    }
-
-    let prompts: PhotoPrompt[] = [];
-
     // Build prompts array from carousel items for dynamic "Add Photo"
     document.querySelectorAll(".custom-carousel-item").forEach(el => {
+        const item = el as HTMLElement;
         prompts.push({
             id: el.id,
-            label: 'test',
-            required: true,
+            label: item.dataset.label ?? 'no-label',
+            required: item.dataset.required === 'True',
             placeholderImage: el.id
         });
     });
@@ -67,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
         prompts.forEach(prompt => {
             let placeholderImage = document.getElementById('placeholder-' + prompt.id) as HTMLImageElement | null;
             if (placeholderImage && prompt.placeholderImage) {
-                placeholderImage.src = '/content/' + prompt.placeholderImage.replace('-', '_') + '.jpg';
+                placeholderImage.src = '/content/' + prompt.placeholderImage.replace(/-/g, "_") + '.jpg';
             }
         });
 
@@ -331,3 +332,28 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+export async function validatePhotosOnSubmit() {
+    const missingRequiredPrompts = [];
+
+    for (const prompt of prompts) {
+        if (!prompt.required) continue;
+
+        const value = await claimStorage.getItem("photo-" + prompt.id);
+
+        if (!value) {
+            missingRequiredPrompts.push(prompt);
+        }
+    }
+
+    if (missingRequiredPrompts.length === 0) return true;
+
+    missingRequiredPrompts.forEach(prompt => {
+        const placeholder = document.getElementById("placeholder-" + prompt.id);
+        if (placeholder) {
+            placeholder.classList.add("missing-required");
+        }
+    });
+
+    return false;
+}

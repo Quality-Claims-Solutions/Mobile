@@ -1,48 +1,70 @@
-﻿<!DOCTYPE html>
+﻿@using Mobile.Models.Other
+@using Mobile.Utilities
+@*Sets the CSS and Logo for branding (set from Program.cs)*@
+@{
+    var brand = Context.Items["Brand"] as BrandInfo;
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Mobile</title>
 
-    @*Bootstrap*@
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    
-    @* Added by Colton *@
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Bootstrap / Bootswatch -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/flatly/bootstrap.min.css">
 
-    @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <!-- FlatPickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <!-- Brand Theme -->
+    <link rel="stylesheet" href="@brand.CssPath" />
+
+    <!-- App Styles -->
     <link rel="stylesheet" href="~/css/camera.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Mobile.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- Icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=ink_eraser" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Mobile</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
+    <header class="d-flex align-items-center">
+        <div class="d-flex justify-content-between align-items-center w-100" style="padding-left: 10px; padding-right: 10px;">
+            <div style="font-size:large; font-weight:bold">
+                @(User.GetUserDisplayName() ?? "Welcome!")
             </div>
-        </nav>
+
+            <div class="d-flex align-items-center">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a class="btn btn-primary me-2 d-inline-flex align-items-center" style="color: white"
+                       asp-controller="Home"
+                       asp-action="Index">
+                        Dash
+                    </a>
+
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="mb-0">
+                        <button type="submit" class="btn btn-primary">Log Out</button>
+                    </form>
+                }
+                else
+                {
+                    <a class="btn btn-primary me-2 d-inline-flex align-items-center" style="color: white" 
+                        asp-controller="Account" 
+                        asp-action="Login">
+                            Log In
+                    </a>
+                }
+            </div>
+        </div>
     </header>
+    <div style="text-align:center; padding-bottom: 20px;">
+        <img src="@brand.LogoPath" alt="Brand Logo" />
+    </div>
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -54,6 +76,10 @@
             &copy; 2026 - Mobile - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+    
+    @* FlatPickr *@
+    <script defer src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -62,20 +88,26 @@
     <script src="https://cdn.jsdelivr.net/npm/localforage@1.10.0/dist/localforage.min.js"></script>
 
     <!-- COLTON ADDED FOR NEW CAMERA-->
-    <script src="~/js/Camera/camera.js"></script>
+    <script type="module" src="~/js/Camera/camera.js"></script>
 
     @* Materialize *@
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    @* <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Initialize Materialize components globally
             M.AutoInit();
         });
-    </script>
+    </script> *@
 
     @*Bootstrap*@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+
+    @* This is where Toast notifications reside *@
+    <div id="toastContainer"
+         data-toast-type="@TempData["Toast.Type"]"
+         data-toast-message="@TempData["Toast.Message"]">
+    </div>
 </body>
 </html>

@@ -1,4 +1,29 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿document.addEventListener("DOMContentLoaded", () => {
+    configureToastNotifications();
+    
+});
 
-// Write your JavaScript code.
+function configureToastNotifications() {
+    const container = document.getElementById("toastContainer");
+
+    if (!container) return;
+
+    const message = container.dataset.toastMessage;
+    const type = container.dataset.toastType || "info";
+
+    if (!message) return;
+
+    const toast = document.createElement("div");
+    toast.id = "toast";
+    toast.classList.add(type);
+    toast.textContent = message;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add("show"), 100);
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 300);
+    }, 5000);
+}

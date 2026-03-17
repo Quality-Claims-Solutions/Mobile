@@ -1,12 +1,17 @@
 {
   "compilerOptions": {
     "target": "ES6",
-    "module": "none",
+    "module": "ES6",
+    "sourceMap": true,
     "outDir": "./wwwroot/js",
     "rootDir": "./Views",
-    "strict": false
+    "strict": false,
+    "skipLibCheck": true
   },
   "include": [
     "Views/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }

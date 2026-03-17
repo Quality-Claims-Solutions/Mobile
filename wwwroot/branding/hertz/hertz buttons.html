@@ -1,0 +1,210 @@
+<!-- These buttons go in the CardLossMenu table's "Description" column, but also keeping them
+    here so they're in source control -->
+<!-- New Estimate Request -->
+
+<h5>New Photo Estimate</h5>
+Tap below to begin a new photo estimate request.
+<script>
+    function onNewEstimate() {
+        var url = new URL(window.location.href);
+        var r = url.searchParams.get('r');
+        var rParam = '';
+        if (r)
+            rParam = '&r=' + r;
+        window.location.href = "/Hertz/HertzInbound.aspx?NewEntry=true" + rParam;
+    }
+</script>
+
+<!-- Find Existing Estimate -->
+
+
+
+<h5>Existing Photo Estimate</h5>
+<div class="row">
+    <div class="col s12">
+        Tap the Button Below to Scan the Vehicle Unit Tag or Enter An Existing Unit/Claim Number below to check its status or add documents and pictures.
+        <div class="input-field">
+            <input id="add_info" type="text" />
+            <label for="add_info">Unit Number</label>
+        </div>
+    </div>
+</div>
+<script src="/Content/Scripts/js/ScanWrapper.js"></script>
+<script src="/Content/Scripts/js/ajaxHelper.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@7.6.0/dist/dbr.js"
+        data-productkeys="f0068NQAAAJKZHugjizUQIT9dEQ9NlY1hG4PFBU6/ggqyaqVdl9+qLBkKBIVp3H5LbZPs9CA53FU6RUpecuQ06lBLEdKswhs="></script> -->
+<link href="/Content/StyleSheets/ScanWrapper.css" rel="stylesheet" />
+<script>
+    async function onExistingEstimate() {
+        var url = new URL(window.location.href);
+        var r = url.searchParams.get('r');
+        var rParam = '';
+        if (r)
+            rParam = '&r=' + r;
+        var txtUnit = document.getElementById('add_info');
+        var unit = txtUnit.value;
+        if (!unit) {
+            unit = await scanWrapper.scanUnitTag()
+            if (unit != null && unit.length >= 11) {
+                txtUnit.value = unit;
+                M.updateTextFields();
+            }
+        }
+        if (!unit) {
+            txtUnit.focus();
+            return;
+        }
+        window.location.href = "/Hertz/HertzInbound.aspx?NewEntry=true" + rParam + "&unit=" + unit;
+    }
+</script>
+
+
+<!-- Pre Rental Photos -->
+
+<h5 class='valign-wrapper'>
+    <img src='/content/images/canada_flag.png' style='height: 25px; margin:  0 10px 0 0;' />
+    <span class='white-text' style='padding: 2px 10px; background-color: #D52B1E;'>Canada Only</span>
+</h5>
+<h5>Pre-Rental Photos</h5>
+Scan the Unit tag or enter the Unit Number below.
+<div class="input-field">
+    <input id="txtPreRentalUnit" type="text" />
+    <label for="txtPreRentalUnit">Unit Number</label>
+</div>
+<script>
+    async function onPreRentalPhotos() {
+        var txtUnit = document.getElementById('txtPreRentalUnit');
+        var unit = txtUnit.value;
+        if (!unit) {
+            unit = await scanWrapper.scanUnitTag();
+        }
+        if (!unit) {
+            txtUnit.focus();
+            return;
+        }
+        window.location.href = "https://hertz-app.abasmartcard.com/HertzRentalPhotos/RentalPhotos.aspx?UnitNumber=" + unit;
+    }
+</script>
+
+<!-- Pre Rental Photos - no scan -->
+
+<h5 class='valign-wrapper'>
+    <img src='/content/images/canada_flag.png' style='height: 25px; margin:  0 10px 0 0;' />
+    <span class='white-text' style='padding: 2px 10px; background-color: #D52B1E;'>Canada Only</span>
+</h5>
+<h5>Pre-Rental Photos</h5>
+Tap here to take take pre-rental photos.
+
+<!-- Scan Unit Out -->
+
+<h5>Scan Unit Out</h5>
+<div class="row">
+    <div class="col s12">
+        Tap below to scan unit tag on vehicle or enter unit number manually and then tap below to mark unit as out for repair.
+        <div class="input-field">
+            <input id="txtScanOut" type="text" />
+            <label for="txtScanOut">Unit Number</label>
+        </div>
+    </div>
+</div>
+<script src="/Content/Scripts/js/ScanWrapper.js"></script>
+<script src="/Content/Scripts/js/ajaxHelper.js"></script><!-- 
+<script src="https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@7.6.0/dist/dbr.js"
+        data-productkeys="f0068NQAAAJKZHugjizUQIT9dEQ9NlY1hG4PFBU6/ggqyaqVdl9+qLBkKBIVp3H5LbZPs9CA53FU6RUpecuQ06lBLEdKswhs="></script> -->
+<link href="/Content/StyleSheets/ScanWrapper.css" rel="stylesheet" />
+<style>
+    .waves-effect {
+        z-index: 0;
+    }
+</style>
+<script>
+    async function scanUnitOut() {
+        var url = new URL(window.location.href);
+        var r = url.searchParams.get('r');
+        var rParam = '';
+        if (r)
+            rParam = '&r=' + r;
+        var txtUnit = document.getElementById('txtScanOut');
+        var unit = txtUnit.value;
+        if (!unit || unit.length < 11) {
+            unit = await scanWrapper.scanUnitTag()
+            if (unit != null && unit.length > 11) {
+                txtUnit.value = unit;
+                M.updateTextFields();
+            }
+        }
+        if (!unit || unit.length < 11) {
+            txtUnit.focus();
+            txtUnit.select();
+            return;
+        }
+        var btn = document.getElementById('scan_out_button');
+        btn.classList.add('disabled');
+        var url = "/Hertz/ScanUnitHandler.ashx?action=scan_out&unit=" + unit + rParam;
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", url);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        var result = await ajaxHelper.sendAsync(xhr);
+        if (result == "OK") {
+            alert("Unit " + unit + " scanned out for repair");
+        }
+        else {
+            alert("error scanning out unit " + unit + ".\r\n" + result);
+            txtUnit.focus();
+            txtUnit.select();
+        }
+        btn.classList.remove('disabled');
+    }
+</script>
+
+<!-- Scan Unit In -->
+
+<h5>Scan Unit In</h5>
+<div class="row">
+    <div class="col s12">
+        Tap below to scan unit tag on vehicle or enter unit number manually and then tap below to mark unit as in for repair.
+        <div class="input-field">
+            <input id="txtScanIn" type="text" />
+            <label for="txtScanIn">Unit Number</label>
+        </div>
+    </div>
+</div>
+<script>
+    async function scanUnitIn() {
+        var url = new URL(window.location.href);
+        var r = url.searchParams.get('r');
+        var rParam = '';
+        if (r)
+            rParam = '&r=' + r;
+        var txtUnit = document.getElementById('txtScanIn');
+        var unit = txtUnit.value;
+        if (!unit || unit.length < 11) {
+            unit = await scanWrapper.scanUnitTag()
+            if (unit != null && unit.length > 11) {
+                txtUnit.value = unit;
+                M.updateTextFields();
+            }
+        }
+        if (!unit || unit.length < 11) {
+            txtUnit.focus();
+            txtUnit.select();
+            return;
+        }
+        var btn = document.getElementById('scan_in_button');
+        btn.classList.add('disabled');
+        var url = "/Hertz/ScanUnitHandler.ashx?action=scan_in&unit=" + unit + rParam;
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", url);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        var result = await ajaxHelper.sendAsync(xhr);
+        if (result == "OK") {
+            alert("Unit " + unit + " scanned in from repair");
+        }
+        else {
+            alert("error scanning in unit " + unit + ".\r\n" + result);
+            txtUnit.focus();
+            txtUnit.select();
+        }
+        btn.classList.remove('disabled');
+    }
+</script>
