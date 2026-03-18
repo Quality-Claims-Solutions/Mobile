@@ -1,4 +1,3 @@
-// wwwroot/js/Camera/camera.ts
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -94,8 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                // COLTON - BLOB CONVERSION
-                //const imgData = canvas.toDataURL("image/png");
                 let photoBlob = yield canvasToBlobAsync(canvas, "image/jpeg");
                 let photoURL = URL.createObjectURL(photoBlob);
                 // Use selected carousel item
@@ -108,32 +105,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 const elementId = selected.id;
                 // Check if Selected is the Add Photo option, which requires dynamic handling
                 if (selected.id === 'add-photo-item') { // Photo is an "Add Photo"
-                    // COLTON - BLOB CONVERSION
-                    //createAndInsertExtraPhoto(imgData, true);
                     createAndInsertExtraPhoto(photoBlob, true);
                 }
                 else { // Photo corresponds to an existing prompt
                     const imgTag = document.getElementById("preview-" + elementId);
-                    // COLTON - BLOB CONVERSION
-                    //if (imgTag) imgTag.src = imgData;
-                    if (imgTag)
+                    if (imgTag) {
                         imgTag.src = photoURL;
-                    // COLTON - BLOB CONVERSION
-                    //claimStorage.setItem("photo-" + elementId, imgData);
+                    }
                     claimStorage.setItem("photo-" + elementId, photoBlob);
                     removeChip(elementId);
                     // Show captured image in main camera area
                     if (photoDisplay) {
-                        // COLTON - BLOB CONVERSION
-                        //photoDisplay.src = imgData;
                         photoDisplay.src = photoURL;
                         photoDisplay.style.display = "block";
                     }
                     // Set the placeholder image
                     const placeholder = document.getElementById('placeholder-' + elementId);
                     if (placeholder) {
-                        // COLTON - BLOB CONVERSION
-                        //placeholder.src = imgData;
                         placeholder.src = photoURL;
                     }
                     // Select the next carousel item that doesn't currently have a photo
@@ -141,7 +129,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     for (let i = currentIndex + 1; i < carouselItems.length; i++) {
                         const key = "photo-" + carouselItems[i].id;
                         if (!(yield claimStorage.getItem(key))) {
-                            //selectCarouselItemById(carouselItems[i].id);
                             carouselItems[i].click();
                             return;
                         }
@@ -161,40 +148,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 else
                     resolve(blob);
             }, type, quality);
-        });
-    }
-    function selectCarouselItemById(itemId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const item = document.getElementById(itemId);
-            if (!item)
-                return;
-            document.querySelectorAll(".custom-carousel-item.selected").forEach(el => el.classList.remove("selected"));
-            item.classList.add("selected");
-            // Update label overlay with fade effect
-            if (labelOverlay) {
-                // Fade out
-                labelOverlay.style.opacity = "0";
-                // After fade out duration, change text and fade back in
-                setTimeout(() => {
-                    labelOverlay.textContent = item.dataset.label || "";
-                    labelOverlay.style.opacity = "1";
-                }, 300); // match the 0.3s transition in CSS
-            }
-            // Center the selected item in the carousel
-            item.scrollIntoView({ behavior: "smooth", inline: "center" });
-            // Show either previously captured photo or video feed
-            const key = "photo-" + item.id;
-            const savedPhoto = yield claimStorage.getItem(key);
-            if (savedPhoto) {
-                if (photoDisplay) {
-                    photoDisplay.src = URL.createObjectURL(savedPhoto);
-                    photoDisplay.style.display = "block";
-                }
-            }
-            else {
-                if (photoDisplay)
-                    photoDisplay.style.display = "none";
-            }
         });
     }
     // Function to handle carousel item click events.
@@ -218,8 +171,6 @@ document.addEventListener("DOMContentLoaded", () => {
             carouselElement.scrollIntoView({ behavior: "smooth", inline: "center" });
             // Show either previously captured photo or video feed
             const key = "photo-" + carouselElement.id;
-            // COLTON - BLOB CONVERSION
-            //const savedPhoto: string = await claimStorage.getItem(key);
             const savedPhoto = yield claimStorage.getItem(key);
             if (savedPhoto) {
                 if (photoDisplay) {
@@ -249,17 +200,12 @@ document.addEventListener("DOMContentLoaded", () => {
     function createAndInsertExtraPhoto(photoBlob, addToLocalForage) {
         const id = `extra-${crypto.randomUUID()}`;
         const label = "Other";
-        // COLTON - BLOB CONVERSION
         let photoURL = URL.createObjectURL(photoBlob);
         // Create and insert carousel image
         const carouselItem = document.createElement("div");
         carouselItem.className = "custom-carousel-item";
         carouselItem.id = id;
         carouselItem.dataset.label = label;
-        // COLTON - BLOB CONVERSION
-        //carouselItem.innerHTML =
-        //    `<span class="custom-carousel-item-label">${label}</span>
-        //<img id="preview-${id}" src="${imgData}" />`;
         carouselItem.innerHTML =
             `<span class="custom-carousel-item-label">${label}</span>
         <img id="preview-${id}" src="${photoURL}" />`;
@@ -272,10 +218,6 @@ document.addEventListener("DOMContentLoaded", () => {
         placeholderItem.className = "image-placeholder";
         placeholderItem.id = "placeholder-" + id;
         placeholderItem.dataset.elementid = id;
-        // COLTON - BLOB CONVERSION
-        //placeholderItem.innerHTML =
-        //    `<img src="${imgData}" alt="Photo Placeholder" />
-        //     <span class="placeholder-label">${label}</span>`;
         placeholderItem.innerHTML =
             `<img src="${photoURL}" alt="Photo Placeholder" />
              <span class="placeholder-label">${label}</span>`;
@@ -284,8 +226,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const addPhotoPlaceholder = document.querySelector('#add-photo-item.image-placeholder');
         addPhotoPlaceholder.parentElement.insertBefore(placeholderItem, addPhotoPlaceholder);
         if (addToLocalForage) {
-            // COLTON - BLOB CONVERSION
-            //claimStorage.setItem("photo-" + id, imgData);
             claimStorage.setItem("photo-" + id, photoBlob);
             // Select the "Add Photo" element again for further additions
             addPhotoItem.click();
@@ -344,42 +284,29 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll('.image-placeholder').forEach((el) => __awaiter(this, void 0, void 0, function* () {
             const placeholder = el;
             const elementId = placeholder.dataset.elementid;
-            // COLTON - BLOB CONVERSION
-            //let imageData: string = await claimStorage.getItem('photo-' + elementId)
             const photoBlob = yield claimStorage.getItem('photo-' + elementId);
-            // COLTON - BLOB CONVERSION
-            //if (imageData) {
             if (photoBlob) {
                 const placeholder = document.getElementById('placeholder-' + elementId);
-                // COLTON - BLOB CONVERSION
-                //placeholder.src = imageData;
                 placeholder.src = URL.createObjectURL(photoBlob);
             }
         }));
         // Restore Carousel Items
         document.querySelectorAll(".custom-carousel-item").forEach((item) => __awaiter(this, void 0, void 0, function* () {
             const key = "photo-" + item.id;
-            // COLTON - BLOB CONVERSION
-            //const imgData: string = await claimStorage.getItem(key);
             const photoBlob = yield claimStorage.getItem(key);
-            //if (imgData) {
             if (photoBlob) {
                 const imgEl = document.getElementById("preview-" + item.id);
-                //if (imgEl) imgEl.src = imgData;
-                if (imgEl)
+                if (imgEl) {
                     imgEl.src = URL.createObjectURL(photoBlob);
+                }
             }
         }));
         // Get all localForage where key starts with "photo-extra-"
         claimStorage.keys().then(keys => {
             keys.forEach((key) => __awaiter(this, void 0, void 0, function* () {
                 if (key.startsWith("photo-extra-")) {
-                    // COLTON - BLOB CONVERSION
-                    //const imgData: string = await claimStorage.getItem(key);
                     const photoBlob = yield claimStorage.getItem(key);
-                    //if (imgData) {
                     if (photoBlob) {
-                        //createAndInsertExtraPhoto(imgData, false);
                         createAndInsertExtraPhoto(photoBlob, false);
                     }
                 }

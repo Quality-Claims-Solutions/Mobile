@@ -14,7 +14,8 @@ namespace Mobile.Controllers
         private readonly Db _dbContext;
 
         // COLTON - Find a better way to do this.  Read from SystemConfig table.
-        public static string DocFolder { get; } = "\\\\192.168.29.94\\QCS_Files\\HertzRentalPhotos";
+        //public static string DocFolder { get; } = "\\\\192.168.29.94\\QCS_Files\\HertzRentalPhotos";
+        public static string DocFolder { get; } = "\\\\192.168.29.94\\QCS_Files\\TEST_HertzRentalPhotos";
 
         public RentalPhotoController(Db dbContext)
         {
@@ -36,14 +37,14 @@ namespace Mobile.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RentalPhotoEntry(RentalPhotoViewModel rentalPhotoViewModel, string submitType)
+        public async Task<IActionResult> RentalPhotoEntry(RentalPhotoViewModel rentalPhotoViewModel)
         {
             if (User == null|| !User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            ValidateRentalPhotoViewModel(rentalPhotoViewModel, submitType);
+            ValidateRentalPhotoViewModel(rentalPhotoViewModel, rentalPhotoViewModel.SubmissionType);
 
             if (!ModelState.IsValid)
             {
@@ -53,7 +54,7 @@ namespace Mobile.Controllers
             try
             {
                 string? programCodeDescription = null;
-                if (submitType == "final")
+                if (rentalPhotoViewModel.SubmissionType == "final")
                 {
                     programCodeDescription = _dbContext.CarrierProgramCode.Where(c => c.Code == User.GetProgramCode())
                         .Select(c => c.Description)
@@ -76,10 +77,10 @@ namespace Mobile.Controllers
                     LicensePlateState = rentalPhotoViewModel.LicensePlateState,
                     Remarks = rentalPhotoViewModel.VehicleComments,
                     LocationName = programCodeDescription,
-                    UserId = submitType == "final" ? User.GetQCSUserId() : null,
-                    DraftCreatedDate = submitType == "draft" ? DateTime.Now : null,
-                    DraftUserId = submitType == "draft" ? User.GetQCSUserId() : null,
-                    IsDraft = submitType == "draft"
+                    UserId = rentalPhotoViewModel.SubmissionType == "final" ? User.GetQCSUserId() : null,
+                    DraftCreatedDate = rentalPhotoViewModel.SubmissionType == "draft" ? DateTime.Now : null,
+                    DraftUserId = rentalPhotoViewModel.SubmissionType == "draft" ? User.GetQCSUserId() : null,
+                    IsDraft = rentalPhotoViewModel.SubmissionType == "draft"
                 };
 
                 await _dbContext.AddAsync(entityModel);
@@ -87,21 +88,22 @@ namespace Mobile.Controllers
 
                 var hertzRentalPhotoAttachmentRows = new List<HertzRentalPhoto_Attachment>();
 
-                // 2. Write all files in parallel
+                // Generate tasks to upload each individual file
+                // All SQL submissions will be added in a list to be compiled at the end.
                 var tasks = rentalPhotoViewModel.PhotoSubmissions.Select(async (file, index) =>
                 {
-                    string fullPath = FileNameUtility.GetUniqueFileName(DocFolder, file.FileName, rentalPhotoViewModel.UnitNumber);
+                    string path = FileNameUtility.GetUniqueFileName(DocFolder, file.FileName, rentalPhotoViewModel.UnitNumber);
 
-                    await using (var stream = System.IO.File.Create(fullPath))
+                    await using (var stream = System.IO.File.Create(Path.Combine(DocFolder, path)))
                     {
                         await file.CopyToAsync(stream);
                     }
 
                     hertzRentalPhotoAttachmentRows.Add(new HertzRentalPhoto_Attachment
                     {
-                        HertzRentalPhotoId = 1,
+                        HertzRentalPhotoId = entityModel.Id,
                         FileName = file.FileName,
-                        Path = fullPath,
+                        Path = path,
                         DateEntered = DateTime.Now,
                         IsEncrypted = false
                     });
@@ -129,7 +131,7 @@ namespace Mobile.Controllers
                     Message = ex.Message,
                     InnerException = ex.InnerException?.Message,
                     StackTrace = ex.StackTrace,
-                    DeveloperNote = $"Error occurred while saving rental photo entry. SubmitType: {submitType}.",
+                    DeveloperNote = $"Error occurred while saving rental photo entry. SubmitType: {rentalPhotoViewModel.SubmissionType}.",
                     DateEntered = DateTime.Now
                 };
 
@@ -141,57 +143,6 @@ namespace Mobile.Controllers
 
                 return View("RentalPhotoEntry", rentalPhotoViewModel);
             }
-        }
-
-
-        [HttpPost]
-        public async Task<IActionResult> RentalPhotoPhotosEntry(List<IFormFile> files, List<string> fileKeys)
-        {
-
-            if (files == null || files.Count == 0)
-            {
-                return BadRequest("No files.");
-            }
-
-            // 1. Decide where to store files
-            string rootPath = Path.Combine("", "uploads");
-            Directory.CreateDirectory(rootPath);
-
-            // These are the DB rows we will bulk insert
-            var hertzRentalPhotoAttachmentRows = new List<HertzRentalPhoto_Attachment>();
-
-            // 2. Write all files in parallel
-            var tasks = files.Select(async (file, index) =>
-            {
-                string key = fileKeys[index];
-                string extension = Path.GetExtension(file.FileName);
-                if (string.IsNullOrEmpty(extension))
-                    extension = ".jpg";
-
-                string fileName = $"{key}-{Guid.NewGuid()}{extension}";
-                string fullPath = Path.Combine(rootPath, fileName);
-
-                await using (var stream = System.IO.File.Create(fullPath))
-                {
-                    await file.CopyToAsync(stream);
-                }
-
-                hertzRentalPhotoAttachmentRows.Add(new HertzRentalPhoto_Attachment
-                {
-                    HertzRentalPhotoId = 1,
-                    FileName = fileName,
-                    Path = fullPath,
-                    DateEntered = DateTime.Now,
-                    IsEncrypted = false
-                });
-            });
-
-            await Task.WhenAll(tasks);
-
-            await _dbContext.AddRangeAsync(hertzRentalPhotoAttachmentRows);
-
-            // 4. Return the paths or IDs
-            return Ok();
         }
 
 

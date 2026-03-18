@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
         var photosAreValid = yield validatePhotosOnSubmit();
         var fieldsAreValid = validator.validate({ fields: validationFields, isDraft: false });
         if (photosAreValid && fieldsAreValid) {
-            submitFormWithPhotos(false);
+            submitFormWithPhotos("draft");
         }
     }));
     btnSaveAsDraft.addEventListener("click", (e) => __awaiter(void 0, void 0, void 0, function* () {
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.dispatchEvent(new CustomEvent("uniqueIdentifierSet", { detail: { localForageUniqueIdentifier } }));
     });
 });
-function submitFormWithPhotos(isDraft) {
+function submitFormWithPhotos(submissionType) {
     return __awaiter(this, void 0, void 0, function* () {
         const form = document.getElementById("frmRentalPhoto");
         const formData = new FormData(form);
@@ -70,10 +70,9 @@ function submitFormWithPhotos(isDraft) {
         // Load blobs from LocalForage
         const photoEntries = yield loadAllPhotoBlobs();
         for (const { key, blob } of photoEntries) {
-            formData.append("Photos", blob, key + ".jpg");
-            formData.append("PhotoKeys", key);
+            formData.append("PhotoSubmissions", blob, key + ".jpg");
         }
-        formData.append("IsDraft", isDraft.toString());
+        formData.append("SubmissionType", submissionType);
         const response = yield fetch(form.action, {
             method: "POST",
             body: formData
@@ -82,8 +81,6 @@ function submitFormWithPhotos(isDraft) {
             alert("Upload failed.");
             return;
         }
-        // Optionally parse JSON or redirect
-        window.location.href = "/some/success/page";
     });
 }
 function loadAllPhotoBlobs() {

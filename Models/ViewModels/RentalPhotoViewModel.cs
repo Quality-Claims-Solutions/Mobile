@@ -41,6 +41,9 @@ namespace Mobile.Models.ViewModels
 
         public List<IFormFile> PhotoSubmissions { get; set; }
 
+        // Value is "draft" or "final" depending on which button the user clicks.
+        public string SubmissionType { get; set; }
+
 
         // Properties from HertzRentalPhoto EntityModel
         public decimal Id { get; set; }

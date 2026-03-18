@@ -21,6 +21,7 @@ namespace Mobile.Models
         public DbSet<Log> Log { get; set; }
 
         public DbSet<HertzRentalPhoto> HertzRentalPhoto { get; set; }
+        public DbSet<HertzRentalPhoto_Attachment> HertzRentalPhoto_Attachment { get; set; }
 
         public DbSet<PhotosExpress> PhotosExpress { get; set; }
         public DbSet<User> User { get; set; }

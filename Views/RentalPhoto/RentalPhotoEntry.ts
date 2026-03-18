@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
         var fieldsAreValid = validator.validate({ fields: validationFields, isDraft: false });
 
         if (photosAreValid && fieldsAreValid) {
-            submitFormWithPhotos(false)
+            submitFormWithPhotos("draft")
         }
     });
 
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-async function submitFormWithPhotos(isDraft : boolean) {
+async function submitFormWithPhotos(submissionType : string) {
     const form = document.getElementById("frmRentalPhoto") as HTMLFormElement;
     const formData = new FormData(form);
 
@@ -77,7 +77,7 @@ async function submitFormWithPhotos(isDraft : boolean) {
         formData.append("PhotoSubmissions", blob, key + ".jpg");
     }
 
-    formData.append("IsDraft", isDraft.toString());
+    formData.append("SubmissionType", submissionType);
 
     const response = await fetch(form.action, {
         method: "POST",
