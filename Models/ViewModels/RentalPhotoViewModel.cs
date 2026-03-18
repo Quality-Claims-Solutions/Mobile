@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Mobile.Utilities;
 
 namespace Mobile.Models.ViewModels
@@ -36,6 +37,10 @@ namespace Mobile.Models.ViewModels
         public List<SelectListItem> StatesSelectOptions { get; set; }
 
         public List<SelectListItem> YearSelectOptions { get; set; }
+
+
+        public List<IFormFile> PhotoSubmissions { get; set; }
+
 
         // Properties from HertzRentalPhoto EntityModel
         public decimal Id { get; set; }

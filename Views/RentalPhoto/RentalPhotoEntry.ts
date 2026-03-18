@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
         var fieldsAreValid = validator.validate({ fields: validationFields, isDraft: false });
 
         if (photosAreValid && fieldsAreValid) {
-            frmRentalPhoto.requestSubmit(btnProceedToRenterDetails);
+            submitFormWithPhotos(false)
         }
     });
 
@@ -40,6 +40,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (photosAreValid && fieldsAreValid) {
             frmRentalPhoto.requestSubmit(btnProceedToRenterDetails);
+            //let photoUploadSuccess = await uploadPhotos();
+            //if (!photoUploadSuccess) {
+            //    alert("There was an issue uploading your photos. Please try again.");
+            //    return;
+            //}
         }
     });
 
@@ -52,8 +57,52 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Trigger an event that camera partial listens to in order to set up localForage
-        let localForageUniqueIdentifier = `claim-${claimNumber}`;
+        let localForageUniqueIdentifier = `prerental-${claimNumber}`;
         claimStorage = localforage.createInstance({ name: localForageUniqueIdentifier });
         document.dispatchEvent(new CustomEvent("uniqueIdentifierSet", { detail: { localForageUniqueIdentifier } }));
     });
 });
+
+
+async function submitFormWithPhotos(isDraft : boolean) {
+    const form = document.getElementById("frmRentalPhoto") as HTMLFormElement;
+    const formData = new FormData(form);
+
+    // Add antiforgery token automatically included in the <form>
+
+    // Load blobs from LocalForage
+    const photoEntries = await loadAllPhotoBlobs();
+
+    for (const { key, blob } of photoEntries) {
+        formData.append("PhotoSubmissions", blob, key + ".jpg");
+    }
+
+    formData.append("IsDraft", isDraft.toString());
+
+    const response = await fetch(form.action, {
+        method: "POST",
+        body: formData
+    });
+
+    if (!response.ok) {
+        alert("Upload failed.");
+        return;
+    }
+}
+
+
+async function loadAllPhotoBlobs(): Promise<{ key: string; blob: Blob; }[]> {
+    const keys = await claimStorage.keys();
+    const photos: { key: string; blob: Blob }[] = [];
+
+    for (const key of keys) {
+        if (!key.startsWith("photo-")) continue;
+
+        const blob = await claimStorage.getItem(key);
+        if (blob instanceof Blob) {
+            photos.push({ key, blob });
+        }
+    }
+
+    return photos;
+}

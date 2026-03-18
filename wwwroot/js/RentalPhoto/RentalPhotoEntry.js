@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
         var photosAreValid = yield validatePhotosOnSubmit();
         var fieldsAreValid = validator.validate({ fields: validationFields, isDraft: false });
         if (photosAreValid && fieldsAreValid) {
-            frmRentalPhoto.requestSubmit(btnProceedToRenterDetails);
+            submitFormWithPhotos(false);
         }
     }));
     btnSaveAsDraft.addEventListener("click", (e) => __awaiter(void 0, void 0, void 0, function* () {
@@ -42,6 +42,11 @@ document.addEventListener("DOMContentLoaded", () => {
         var fieldsAreValid = validator.validate({ fields: validationFields, isDraft: true });
         if (photosAreValid && fieldsAreValid) {
             frmRentalPhoto.requestSubmit(btnProceedToRenterDetails);
+            //let photoUploadSuccess = await uploadPhotos();
+            //if (!photoUploadSuccess) {
+            //    alert("There was an issue uploading your photos. Please try again.");
+            //    return;
+            //}
         }
     }));
     // Initialize Camera control
@@ -52,9 +57,48 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         // Trigger an event that camera partial listens to in order to set up localForage
-        let localForageUniqueIdentifier = `claim-${claimNumber}`;
+        let localForageUniqueIdentifier = `prerental-${claimNumber}`;
         claimStorage = localforage.createInstance({ name: localForageUniqueIdentifier });
         document.dispatchEvent(new CustomEvent("uniqueIdentifierSet", { detail: { localForageUniqueIdentifier } }));
     });
 });
+function submitFormWithPhotos(isDraft) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const form = document.getElementById("frmRentalPhoto");
+        const formData = new FormData(form);
+        // Add antiforgery token automatically included in the <form>
+        // Load blobs from LocalForage
+        const photoEntries = yield loadAllPhotoBlobs();
+        for (const { key, blob } of photoEntries) {
+            formData.append("Photos", blob, key + ".jpg");
+            formData.append("PhotoKeys", key);
+        }
+        formData.append("IsDraft", isDraft.toString());
+        const response = yield fetch(form.action, {
+            method: "POST",
+            body: formData
+        });
+        if (!response.ok) {
+            alert("Upload failed.");
+            return;
+        }
+        // Optionally parse JSON or redirect
+        window.location.href = "/some/success/page";
+    });
+}
+function loadAllPhotoBlobs() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const keys = yield claimStorage.keys();
+        const photos = [];
+        for (const key of keys) {
+            if (!key.startsWith("photo-"))
+                continue;
+            const blob = yield claimStorage.getItem(key);
+            if (blob instanceof Blob) {
+                photos.push({ key, blob });
+            }
+        }
+        return photos;
+    });
+}
 //# sourceMappingURL=RentalPhotoEntry.js.map

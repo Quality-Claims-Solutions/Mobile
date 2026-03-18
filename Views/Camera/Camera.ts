@@ -1,7 +1,4 @@
-﻿// wwwroot/js/Camera/camera.ts
-
-declare const localforage: any;
-
+﻿declare const localforage: any;
 let claimStorage: any | null = null;
 
 interface PhotoPrompt {
@@ -96,59 +93,81 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Capture photo
+    let capturing = false;
     if (captureButton && canvas && video) {
+        console.log("Capture handler attached");
         captureButton.addEventListener("click", async () => {
-            const context = canvas.getContext("2d");
-            if (!context) return;
+            //if (capturing) return; // prevent re-entry
+            //capturing = true;
 
-            // size canvas to video
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            try {
+                const context = canvas.getContext("2d");
+                if (!context) return;
 
-            const imgData = canvas.toDataURL("image/png");
+                // size canvas to video
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Use selected carousel item
-            let selected = document.querySelector<HTMLElement>(".custom-carousel-item.selected");
-            if (!selected) {
-                selected = document.querySelector<HTMLElement>(".custom-carousel-item") || undefined as any;
-            }
-            if (!selected) return;
-            const elementId = selected.id;
+                let photoBlob = await canvasToBlobAsync(canvas, "image/jpeg");
+                let photoURL: string = URL.createObjectURL(photoBlob);
 
-            // Check if Selected is the Add Photo option, which requires dynamic handling
-            if (selected.id === 'add-photo-item') { // Photo is an "Add Photo"
-                createAndInsertExtraPhoto(imgData, true);
-            }
-            else { // Photo corresponds to an existing prompt
-                const imgTag = document.getElementById("preview-" + elementId) as HTMLImageElement | null;
-                if (imgTag) imgTag.src = imgData;
-
-                claimStorage.setItem("photo-" + elementId, imgData);
-                removeChip(elementId);
-
-                // Show captured image in main camera area
-                if (photoDisplay) {
-                    photoDisplay.src = imgData;
-                    photoDisplay.style.display = "block";
+                // Use selected carousel item
+                let selected = document.querySelector<HTMLElement>(".custom-carousel-item.selected");
+                if (!selected) {
+                    selected = document.querySelector<HTMLElement>(".custom-carousel-item") || undefined as any;
                 }
+                if (!selected) return;
+                const elementId = selected.id;
 
-                // Set the placeholder image
-                const placeholder = document.getElementById('placeholder-' + elementId) as HTMLImageElement;
-                if (placeholder) {
-                    placeholder.src = imgData;
+                // Check if Selected is the Add Photo option, which requires dynamic handling
+                if (selected.id === 'add-photo-item') { // Photo is an "Add Photo"
+                    createAndInsertExtraPhoto(photoBlob, true);
                 }
+                else { // Photo corresponds to an existing prompt
+                    const imgTag = document.getElementById("preview-" + elementId) as HTMLImageElement | null;
 
-                // Select the next carousel item that doesn't currently have a photo
-                const currentIndex = carouselItems.indexOf(selected);
-                for (let i = currentIndex + 1; i < carouselItems.length; i++) {
-                    const key = "photo-" + carouselItems[i].id;
-                    if (!await claimStorage.getItem(key)) {
-                        carouselItems[i].click();
-                        return;
+                    if (imgTag) {
+                        imgTag.src = photoURL;
+                    }
+
+                    claimStorage.setItem("photo-" + elementId, photoBlob);
+                    removeChip(elementId);
+
+                    // Show captured image in main camera area
+                    if (photoDisplay) {
+                        photoDisplay.src = photoURL;
+                        photoDisplay.style.display = "block";
+                    }
+
+                    // Set the placeholder image
+                    const placeholder = document.getElementById('placeholder-' + elementId) as HTMLImageElement;
+                    if (placeholder) {
+                        placeholder.src = photoURL;
+                    }
+
+                    // Select the next carousel item that doesn't currently have a photo
+                    const currentIndex = carouselItems.indexOf(selected);
+                    for (let i = currentIndex + 1; i < carouselItems.length; i++) {
+                        const key = "photo-" + carouselItems[i].id;
+                        if (!await claimStorage.getItem(key)) {
+                            carouselItems[i].click();
+                            return;
+                        }
                     }
                 }
+            } finally {
+                capturing = false;
             }
+        });
+    }
+
+    function canvasToBlobAsync(canvas: HTMLCanvasElement, type = "image/jpeg", quality = 0.8): Promise<Blob> {
+        return new Promise((resolve, reject) => {
+            canvas.toBlob((blob) => {
+                if (!blob) reject(new Error("Blob conversion failed"));
+                else resolve(blob);
+            }, type, quality);
         });
     }
 
@@ -176,10 +195,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Show either previously captured photo or video feed
         const key = "photo-" + carouselElement.id;
-        const savedPhoto: string = await claimStorage.getItem(key);
+        const savedPhoto: Blob = await claimStorage.getItem(key);
         if (savedPhoto) {
             if (photoDisplay) {
-                photoDisplay.src = savedPhoto;
+                photoDisplay.src = URL.createObjectURL(savedPhoto);
                 photoDisplay.style.display = "block";
             }
         } else {
@@ -200,9 +219,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Dynamically adds for both the carousel and the placeholder area.
     // Add to local forage controls whether or not the photo is saved to localForage storage, because in initialization cases, the photo is already saved.
     // AddToLocalForage should only be set to true if the image has just been taken.
-    function createAndInsertExtraPhoto(imgData: string, addToLocalForage: boolean) {
+    function createAndInsertExtraPhoto(photoBlob: Blob, addToLocalForage: boolean) {
         const id = `extra-${crypto.randomUUID()}`;
         const label = "Other";
+
+        let photoURL = URL.createObjectURL(photoBlob);
 
         // Create and insert carousel image
         const carouselItem = document.createElement("div");
@@ -212,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         carouselItem.innerHTML =
             `<span class="custom-carousel-item-label">${label}</span>
-        <img id="preview-${id}" src="${imgData}" />`;
+        <img id="preview-${id}" src="${photoURL}" />`;
 
         // Add click event to the new carousel item
         carouselItem.addEventListener("click", () => addCarouselClickEvent(carouselItem));
@@ -227,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
         placeholderItem.dataset.elementid = id;
 
         placeholderItem.innerHTML =
-            `<img src="${imgData}" alt="Photo Placeholder" />
+            `<img src="${photoURL}" alt="Photo Placeholder" />
              <span class="placeholder-label">${label}</span>`;
 
         // Add click event to the new placeholder item
@@ -237,7 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
         addPhotoPlaceholder.parentElement!.insertBefore(placeholderItem, addPhotoPlaceholder);
 
         if (addToLocalForage) {
-            claimStorage.setItem("photo-" + id, imgData);
+            claimStorage.setItem("photo-" + id, photoBlob);
 
             // Select the "Add Photo" element again for further additions
             addPhotoItem.click();
@@ -303,20 +324,26 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll('.image-placeholder').forEach(async el => {
             const placeholder = el as HTMLElement;
             const elementId = placeholder.dataset.elementid;
-            let imageData: string = await claimStorage.getItem('photo-' + elementId)
-            if (imageData) {
+
+            const photoBlob: Blob = await claimStorage.getItem('photo-' + elementId);
+
+            if (photoBlob) {
                 const placeholder = document.getElementById('placeholder-' + elementId) as HTMLImageElement;
-                placeholder.src = imageData;
+
+                placeholder.src = URL.createObjectURL(photoBlob);
             }
         });
 
         // Restore Carousel Items
         document.querySelectorAll<HTMLElement>(".custom-carousel-item").forEach(async item => {
             const key = "photo-" + item.id;
-            const imgData: string = await claimStorage.getItem(key);
-            if (imgData) {
+
+            const photoBlob: Blob = await claimStorage.getItem(key);
+            if (photoBlob) {
                 const imgEl = document.getElementById("preview-" + item.id) as HTMLImageElement | null;
-                if (imgEl) imgEl.src = imgData;
+                if (imgEl) {
+                    imgEl.src = URL.createObjectURL(photoBlob);
+                }
             }
         });
 
@@ -324,9 +351,9 @@ document.addEventListener("DOMContentLoaded", () => {
         claimStorage.keys().then(keys => {
             keys.forEach(async key => {
                 if (key.startsWith("photo-extra-")) {
-                    const imgData: string = await claimStorage.getItem(key);
-                    if (imgData) {
-                        createAndInsertExtraPhoto(imgData, false);
+                    const photoBlob: Blob = await claimStorage.getItem(key);
+                    if (photoBlob) {
+                        createAndInsertExtraPhoto(photoBlob, false);
                     }
                 }
             });
