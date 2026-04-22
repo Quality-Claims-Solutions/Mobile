@@ -1,0 +1,179 @@
+﻿@using Mobile.Models.ViewModels
+@model RentalPhotoFullViewModel
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@section Scripts {
+    <script type="module" src="~/js/RentalPhoto/RentalPhotoReview.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@5.0.2/dist/signature_pad.umd.min.js"></script>
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col s12">
+            <h5>Pre-Rental Photos Review</h5>
+            <p class="grey-text">Add Rental Details Below</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12">
+            <a class="btn btn-primary w-100 card-button" id="btnEditDraft">
+                Edit Vehicle / Add Photos
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+
+            <div class="row mb-3">
+                <div class="col-6">
+                    <small class="text-muted">Date Entered</small>
+                    <div class="fw-semibold">@Model.RentalPhotoEntry.DateEntered</div>
+                </div>
+                <div class="col-6">
+                    <small class="text-muted">Created By</small>
+                    <div class="fw-semibold">@Model.RentalPhotoEntry.SubmittedBy</div>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row">
+                <div class="col-6">
+                    <small class="text-muted">Regional Pool</small>
+                    <div class="fw-semibold">@Model.RentalPhotoEntry.LocationName</div>
+                </div>
+                <div class="col-6">
+                    <small class="text-muted">Location Number</small>
+                    <div class="fw-semibold">@Model.RentalPhotoEntry.RentalLocation</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="image-grid">
+        @foreach (var photo in Model.RentalPhotoEntry.PhotoAttachments)
+        {
+            <div class="image-placeholder" data-label="@photo.FileName">
+                <img src="/RentalPhoto/Attachment?filePath=@Uri.EscapeDataString(photo.Path)" alt="@photo.FileName" />
+                <div class="placeholder-label">@photo.DisplayName</div>
+            </div>
+        }
+    </div>
+
+    <form id="frmRentalPhotoReview" asp-controller="RentalPhoto" asp-action="UpdateRentalPhotoReview" novalidate method="put">
+        <input asp-for="RentalPhotoReview.Id" type="hidden" />
+        <div class="form-floating mb-3">
+            <input id="txtRentalRecord"
+                   asp-for="RentalPhotoReview.RentalRecord"
+                   type="text"
+                   class="form-control"
+                   placeholder=" " />
+            <label for="txtRentLocation">Rental Record</label>
+            <div class="invalid-feedback">Enter rental record.</div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="form-floating select-arrow mb-3">
+                    <select id="ddlRentalType"
+                            asp-for="RentalPhotoReview.RentalType"
+                            class="form-select"
+                            aria-label="Rental Type"
+                            required>
+                        <option value="Retail">Retail</option>
+                        <option value="Replacement">Replacement</option>
+                        <option value="Uber TNC">Uber TNC</option>
+                        <option value="Lyft TNC">Lyft TNC</option>
+                    </select>
+                    <label for="ddlRentalType">Rental Type</label>
+                    <div class="invalid-feedback">Select a rental type.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-check form-check-inline">
+            <input class="form-check-input"
+                   type="checkbox"
+                   asp-for="RentalPhotoReview.SendToRenterEmail"
+                   id="chkSendToRenterEmail">
+            <label class="form-check-label" for="chkSendToRenterEmail">Send Copy to Renter Email</label>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="form-floating mb-3" id="divRenterEmail">
+                    <input id="txtRenterEmail"
+                           asp-for="RentalPhotoReview.RenterEmail"
+                           type="text"
+                           class="form-control"
+                           placeholder=" " />
+                    <label for="txtRenterEmail">Renter Email</label>
+                    <div class="invalid-feedback">Enter renter email.</div>
+                </div>
+                    
+                <p style="color: red; padding-top: 8px;" id="prerentalDisclaimer">Note: By declining to enter an email the customer will not receive a copy of the pre-rental photos.</p>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input id="txtRemarks"
+                           asp-for="RentalPhotoReview.VehicleComments"
+                           type="text"
+                           class="form-control"
+                           placeholder=" " />
+                    <label for="txtVehicleComments">Vehicle Comments</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="signature-container">
+            <canvas id="signature-pad"></canvas>
+            <span id="clear-signature" class="material-symbols-rounded clear-icon">
+                ink_eraser
+            </span>
+        </div>
+        <button id="btnAcceptSignature" type="button" class="btn btn-primary w-100 disabled" style="border-radius: 0px 0px 8px 8px;">Accept Signature</button>
+
+        <div class="row g-3" style="padding-top: 10px;">
+            <div class="col-12">
+                <p>
+                    Hertz proudly offers an exclusively non-smoking fleet. Should you choose to smoke or use electronic
+                    cigarettes, an amount of $400 will be assessed to your final rental statement to recoup cleaning
+                    expenses. 
+                    <b>
+                        Vehicles returned requiring more than our standard cleaning will incur a service charge.
+                        Please inquire for more information.
+                    </b>
+                </p>
+            </div>
+        </div>
+
+
+        <div id="divValidationSummary" class="validation-summary">
+            @* Dynamically populated *@
+        </div>
+
+        <!-- Actions -->
+        <div class="row" style="padding-top: 10px;">
+            <div class="col-12">
+                <button id="btnSubmit" type="submit" class="btn btn-primary w-100" style="height: 54px; font-size: 1.4rem;">Submit PreRental Photo Set</button>
+            </div>
+        </div>
+
+        <div class="row" style="padding-top: 10px;">
+            <div class="col-12">
+                <button id="btnUploadTNCRental" type="submit" class="btn btn-primary w-100" style="height: 54px; font-size: 1.4rem;">Upload TNC Rental</button>
+            </div>
+        </div>
+    </form>
+</div>

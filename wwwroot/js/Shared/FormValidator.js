@@ -6,11 +6,6 @@ export class FormValidator {
         this.container = container;
     }
     validate({ fields, isDraft }) {
-        if (!this.container.innerHTML.includes("Missing Data")) {
-            const header = document.createElement("h4");
-            header.textContent = "Missing Data";
-            this.container.appendChild(header);
-        }
         let valid = true;
         fields.forEach(f => {
             const autoRemoval = () => {
@@ -37,6 +32,14 @@ export class FormValidator {
         return valid;
     }
     addChip(name, id) {
+        if (document.getElementById("chip-" + id) != null) {
+            return;
+        }
+        if (!this.container.innerHTML.includes("Missing Data")) {
+            const header = document.createElement("h4");
+            header.textContent = "Missing Data";
+            this.container.appendChild(header);
+        }
         const chip = document.createElement("a");
         chip.className = "chip z-depth-1";
         chip.href = "#" + id;

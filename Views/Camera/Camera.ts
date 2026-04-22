@@ -6,6 +6,7 @@ interface PhotoPrompt {
     label: string;
     required: boolean;
     placeholderImage?: string;
+    existingAttachment: string | null;
 }
 
 let prompts: PhotoPrompt[] = [];
@@ -24,14 +25,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let stream: MediaStream | null = null;
 
-    // Build prompts array from carousel items for dynamic "Add Photo"
-    document.querySelectorAll(".custom-carousel-item").forEach(el => {
+    // Build prompts array from image placeholders for dynamic "Add Photo"
+    document.querySelectorAll(".image-placeholder").forEach(el => {
         const item = el as HTMLElement;
+
+        if (item.dataset.elementid === 'add-photo-item') {
+            return;
+        }
+
         prompts.push({
-            id: el.id,
+            id: item.dataset.elementid,
             label: item.dataset.label ?? 'no-label',
             required: item.dataset.required === 'True',
-            placeholderImage: el.id
+            placeholderImage: item.dataset.elementid,
+            existingAttachment: item.dataset.existingPath
         });
     });
 
@@ -72,6 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Initialize localForage instance for this claim
         claimStorage = localforage.createInstance({ name: localForageUniqueIdentifier });
+
+        // Populate local storage with existing attachments if they exist.
+        // This only needs to happen on Rental Photo drafts being edited after photo submission.
+        await populateLocalStorageFromExistingAttachments();
 
         // Enable placeholders inside the partial
         document.querySelectorAll(".image-placeholder").forEach(item => {
@@ -131,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         imgTag.src = photoURL;
                     }
 
-                    claimStorage.setItem("photo-" + elementId, photoBlob);
+                    claimStorage.setItem("new-photo-" + elementId, photoBlob);
                     removeChip(elementId);
 
                     // Show captured image in main camera area
@@ -162,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    function canvasToBlobAsync(canvas: HTMLCanvasElement, type = "image/jpeg", quality = 0.8): Promise<Blob> {
+    function canvasToBlobAsync(canvas: HTMLCanvasElement, type = "image/jpeg", quality = 1): Promise<Blob> {
         return new Promise((resolve, reject) => {
             canvas.toBlob((blob) => {
                 if (!blob) reject(new Error("Blob conversion failed"));
@@ -258,7 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
         addPhotoPlaceholder.parentElement!.insertBefore(placeholderItem, addPhotoPlaceholder);
 
         if (addToLocalForage) {
-            claimStorage.setItem("photo-" + id, photoBlob);
+            claimStorage.setItem("new-photo-" + id, photoBlob);
 
             // Select the "Add Photo" element again for further additions
             addPhotoItem.click();
@@ -272,14 +283,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-    // Clear button wipes out claimStorage photos
+    // Clear button allows retake of image
     clearButton?.addEventListener("click", () => {
-        document.querySelectorAll<HTMLElement>(".custom-carousel-item").forEach(item => {
-            const key = "photo-" + item.id;
-            claimStorage.removeItem(key);
-            const imgEl = document.getElementById("preview-" + item.id) as HTMLImageElement | null;
-            if (imgEl) imgEl.src = "";
-        });
+        const selected = document.querySelector<HTMLElement>(".custom-carousel-item.selected");
+        if (!selected) return;
+
+        const elementId = selected.id;
+
+        // Clear from localForage
+        claimStorage.removeItem("photo-" + elementId);
+        claimStorage.removeItem("new-photo-" + elementId);
+
+        // Clear photo display
+        const photoURL = URL.createObjectURL(new Blob());
+        if (photoDisplay) {
+            photoDisplay.src = photoURL;
+            photoDisplay.style.display = "none";
+        }
+
+        // Reset placeholder image to original
+        const placeholder = document.getElementById('placeholder-' + elementId) as HTMLImageElement | null;
+        if (placeholder) {
+            const prompt = prompts.find(p => p.id === elementId);
+            if (prompt && prompt.placeholderImage) {
+                placeholder.src = '/content/' + prompt.placeholderImage.replace(/-/g, "_") + '.jpg';
+            }
+        }
     });
 
 
@@ -316,6 +345,23 @@ document.addEventListener("DOMContentLoaded", () => {
             video.srcObject = null;
         }
     };
+
+    // Uses the paths provided in the data tag of the HTML element (stored in prompts array)
+    // to get the server images for a Rental Photo draft that has submitted photos already.
+    async function populateLocalStorageFromExistingAttachments() {
+        for (const prompt of prompts) {
+            if (prompt.existingAttachment == '') continue;
+
+            const key = "photo-" + prompt.id;
+
+            const url = `/RentalPhoto/Attachment?filepath=${encodeURIComponent(prompt.existingAttachment)}`;
+
+            const response = await fetch(url);
+            const blob = await response.blob();
+
+            await claimStorage.setItem(key, blob);
+        }
+    }
 
     // Cycles through the placeholder and carousel images and loads any saved images from localForage
     // Then checks the localForage for any extra photos saved with the "Add Photo" option and recreates those in the carousel and placeholders.
@@ -396,6 +442,11 @@ export async function validatePhotosOnSubmit() {
 
 function addChip(name: string, id: string) {
     const validationSummary = document.getElementById("divValidationSummary")
+
+    if (document.getElementById("chip-" + id) != null) {
+        return;
+    }
+
     const chip = document.createElement("a");
     chip.className = "chip z-depth-1";
     chip.href = "#" + id;

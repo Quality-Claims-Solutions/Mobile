@@ -1,5 +1,5 @@
 ﻿@using Mobile.Models.ViewModels
-@model RentalPhotoViewModel
+@model RentalPhotoEntryViewModel
 @{
     ViewData["Title"] = "Pre-Rental Inspection Photos";
 }
@@ -10,6 +10,7 @@
 
 
 <form id="frmRentalPhoto" asp-controller="RentalPhoto" asp-action="RentalPhotoEntry" novalidate method="post">
+    <input asp-for="Id" id="preRentalDraftId" type="hidden" />
     <div class="container px-3">
         <div class="row" style="margin-bottom: 10px;">
             <h3 class="col-12">Pre-Rental Inspection Photos</h3>
@@ -219,3 +220,80 @@
         </div>
     </div>
 </form>
+
+<!-- DRAFT MODAL -->
+<div class="modal fade" id="draftModal" tabindex="-1" aria-labelledby="draftModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="draftModalLabel">Draft Found</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <p>We found a saved Rental Photo draft with the following details:</p>
+
+                <div class="border rounded p-3 bg-light">
+                    <p class="mb-1"><strong>Unit:</strong> <span id="draftUnit"></span></p>
+                    <p class="mb-1"><strong>VIN:</strong> <span id="draftVin"></span></p>
+                    <p class="mb-1"><strong>Vehicle:</strong> <span id="draftVehicleInfo"></span></p>
+                </div>
+
+                <p class="mt-3 mb-0">
+                    Would you like to use the draft, use only the vehicle information, or discard the data and proceed without prefilled fields?
+                </p>
+            </div>
+            <div class="modal-footer d-flex flex-column gap-2">
+                <div class="d-flex w-100 gap-2">
+                    <button type="button" id="btnUseDraftFleetData" class="btn btn-primary" style="flex: 1;">
+                        Use Vehicle Data
+                    </button>
+                    <button type="button" id="btnUseDraft" class="btn btn-primary" style="flex: 1;">
+                        Use Draft Data
+                    </button>
+                </div>
+
+                <button type="button" id="btnDiscardDraft" class="btn btn-secondary w-100">
+                    Discard Data
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FLEET MATCH MODAL -->
+<div class="modal fade" id="fleetMatchModal" tabindex="-1" aria-labelledby="fleetMatchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="fleetMatchModalLabel">Vehicle Data Found</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <p>We found vehicle data with the following details:</p>
+
+                <div class="border rounded p-3 bg-light">
+                    <p class="mb-1"><strong>Unit:</strong> <span id="fleetMatchUnit"></span></p>
+                    <p class="mb-1"><strong>VIN:</strong> <span id="fleetMatchVin"></span></p>
+                    <p class="mb-1"><strong>Vehicle:</strong> <span id="fleetMatchVehicleInfo"></span></p>
+                </div>
+
+                <p class="mt-3 mb-0">
+                    Would you like to continue with this data or continue manually?
+                </p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="btnDiscardVehicleData" class="btn btn-outline-danger" style="flex: 4;">
+                    Discard Data
+                </button>
+                <button type="button" id="btnUseVehicleData" class="btn btn-primary" style="flex: 6;">
+                    Use Data
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

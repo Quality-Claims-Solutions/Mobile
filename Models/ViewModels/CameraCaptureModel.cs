@@ -17,5 +17,7 @@
         public string PlaceholderImage { get; set; }
 
         public bool IsRequired { get; set; } = true;
+
+        public AttachmentViewModel? ExistingAttachment { get; set; }
     }
 }

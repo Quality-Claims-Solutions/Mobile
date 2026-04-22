@@ -49,7 +49,10 @@
 <div class="image-grid">
     @foreach (var image in Model.Prompts)
     {
-        <div class="image-placeholder" data-elementid="@image.ElementId" data-label="@image.Label">
+        <div class="image-placeholder" 
+            data-elementid="@image.ElementId" 
+            data-label="@image.Label"
+            data-existing-path="@(image.ExistingAttachment?.Path)">
             <img id="placeholder-@image.ElementId" src="~/content/@image.PlaceholderImage" alt="@image.Label" />
             <div class="placeholder-label">@image.Label</div>
         </div>

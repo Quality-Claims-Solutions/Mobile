@@ -37,6 +37,12 @@ header {
     margin-bottom: 0px;
 }
 
+.hidden {
+    display: none !important;
+}
+
+
+
 /*Validation*/
 .chip {
     background-color: #F44336;
@@ -74,6 +80,10 @@ header {
     border: none;
     height: 36px;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+}
+
+.disabled {
+    color: #5e5c5c !important;
 }
 
 
@@ -130,13 +140,7 @@ header {
     resize: vertical;
 }
 
-/* Focus underline colors */
-.form-floating .form-control:focus,
-.form-floating .form-select:focus,
-.form-floating textarea.form-control:focus {
-    border-bottom-color: var(--bs-primary);
-    box-shadow: 0 1px 0 0 var(--bs-primary);
-}
+
 
 /* Validation underline colors */
 .was-validated .form-control:invalid,
@@ -292,4 +296,42 @@ select option {
     font-weight: bold;
     text-align: center;
     border-radius: 4px;
+}
+
+/*Signature Pad Styling*/
+.signature-container {
+    position: relative;
+    border: 1px solid #ccc;
+    border-radius: 8px 8px 0px 0px;
+    width: 100%;
+    max-width: 400px;
+    height: 200px;
+    overflow: hidden;
+}
+
+    .signature-container canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+        border-radius: 8px 8px 0px 0px;
+    }
+
+.clear-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 24px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 50%;
+    padding: 4px;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* show when hovered or active (writing) */
+.signature-container.active .clear-icon {
+    opacity: 1;
+    pointer-events: auto;
 }
